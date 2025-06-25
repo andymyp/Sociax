@@ -27,7 +27,7 @@ export default function Home() {
         </ol>
 
         <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <Button size="lg" className="rounded-full">
+          <Button size="xl" className="rounded-full">
             <Image
               className="dark:invert"
               src="/vercel.svg"
