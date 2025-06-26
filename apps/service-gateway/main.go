@@ -39,7 +39,7 @@ func main() {
 	app.Use(limiter.New())
 
 	app.Use(logger.New(logger.Config{
-		Format:     "[${time}] ${status} - ${method} ${path}\n",
+		Format:     "[${time}] ${status} - ${method} ${path} ${latency} ${error}\n",
 		TimeFormat: "2006/01/02 15:04:05",
 		TimeZone:   "Asia/Jakarta",
 	}))
