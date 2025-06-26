@@ -3,6 +3,10 @@ package main
 import (
 	"log"
 
+	"Sociax/service-gateway/routes"
+	"Sociax/shared-go/rabbitmq"
+	"Sociax/shared-go/utils"
+
 	"github.com/goccy/go-json"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
@@ -12,6 +16,19 @@ import (
 )
 
 func main() {
+  utils.LoadEnv()
+
+	rpc, err := rabbitmq.NewClient(rabbitmq.Config{
+		User:      utils.GetEnvOrFail("RABBITMQ_USER"),
+		Password:  utils.GetEnvOrFail("RABBITMQ_PASS"),
+		Host:      utils.GetEnvOrFail("RABBITMQ_HOST"),
+		QueueName: utils.GetEnvOrFail("RABBITMQ_QUEUE"),
+	})
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer rpc.Close()
+
 	app := fiber.New(fiber.Config{
 		JSONEncoder: json.Marshal,
 		JSONDecoder: json.Unmarshal,
@@ -26,5 +43,10 @@ func main() {
 		return c.SendString("Gateway service is running.")
 	})
 
-	log.Fatal(app.Listen(":3001"))
+	routes.AuthRoutes(app, rpc)
+
+	PORT := utils.GetEnvOrFail("PORT")
+	if err:= app.Listen(":" + PORT); err != nil {
+		log.Fatal(err.Error())
+	}
 }

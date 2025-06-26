@@ -1,10 +1,6 @@
-module Sociax/service-auth
+module Sociax/shared-go
 
 go 1.24.4
-
-replace Sociax/shared-go => ../../packages/shared-go
-
-require Sociax/shared-go v0.0.0
 
 require (
 	github.com/google/uuid v1.6.0 // indirect
