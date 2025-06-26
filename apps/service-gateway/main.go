@@ -37,7 +37,12 @@ func main() {
 	app.Use(cors.New())
 	app.Use(helmet.New())
 	app.Use(limiter.New())
-	app.Use(logger.New())
+
+	app.Use(logger.New(logger.Config{
+		Format:     "[${time}] ${status} - ${method} ${path}\n",
+		TimeFormat: "2006/01/02 15:04:05",
+		TimeZone:   "Asia/Jakarta",
+	}))
 
 	app.Get("/", func(c *fiber.Ctx) error {
 		return c.SendString("Gateway service is running.")
