@@ -4,10 +4,12 @@ import (
 	"log"
 
 	"Sociax/service-gateway/routes"
+	"Sociax/shared-go/otelmetrics"
 	"Sociax/shared-go/rabbitmq"
 	"Sociax/shared-go/utils"
 
 	"github.com/goccy/go-json"
+	"github.com/gofiber/contrib/otelfiber/v2"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/helmet"
@@ -17,6 +19,12 @@ import (
 
 func main() {
   utils.LoadEnv()
+
+	cleanupMatrics := otelmetrics.InitMetrics(
+		utils.GetEnvOrFail("METRICS_ENDPOINT"),
+		utils.GetEnvOrFail("SERVICE_NAME"),
+	)
+	defer cleanupMatrics()
 
 	rpc, err := rabbitmq.NewClient(rabbitmq.Config{
 		User:      utils.GetEnvOrFail("RABBITMQ_USER"),
@@ -43,6 +51,8 @@ func main() {
 		TimeFormat: "2006/01/02 15:04:05",
 		TimeZone:   "Asia/Jakarta",
 	}))
+
+	app.Use(otelfiber.Middleware())
 
 	app.Get("/", func(c *fiber.Ctx) error {
 		return c.SendString("Gateway service is running.")

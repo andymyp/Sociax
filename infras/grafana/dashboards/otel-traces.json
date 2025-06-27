@@ -1,0 +1,101 @@
+{
+  "annotations": { "list": [] },
+  "editable": true,
+  "gnetId": null,
+  "graphTooltip": 0,
+  "id": null,
+  "panels": [
+    {
+      "type": "graph",
+      "title": "🔹 Request Rate (calls/sec)",
+      "gridPos": {
+        "h": 8,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "targets": [
+        {
+          "expr": "rate(span_metrics_duration_milliseconds_count{service_name=~\"$service\"}[5m])",
+          "legendFormat": "{{span_name}}",
+          "refId": "A"
+        }
+      ],
+      "id": 1
+    },
+    {
+      "type": "graph",
+      "title": "📏 Latency Histogram",
+      "gridPos": {
+        "h": 8,
+        "w": 24,
+        "x": 0,
+        "y": 8
+      },
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.95, sum(rate(span_metrics_duration_milliseconds_bucket{service_name=~\"$service\"}[5m])) by (le, span_name))",
+          "legendFormat": "p95 {{span_name}}",
+          "refId": "A"
+        }
+      ],
+      "id": 2
+    },
+    {
+      "type": "graph",
+      "title": "📉 p95 Latency Over Time",
+      "gridPos": {
+        "h": 8,
+        "w": 24,
+        "x": 0,
+        "y": 16
+      },
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.95, sum(rate(span_metrics_duration_milliseconds_bucket{service_name=~\"$service\"}[5m])) by (le, span_name))",
+          "legendFormat": "{{span_name}}",
+          "refId": "A"
+        }
+      ],
+      "id": 3
+    },
+    {
+      "type": "graph",
+      "title": "🔴 Error Rate",
+      "gridPos": {
+        "h": 8,
+        "w": 24,
+        "x": 0,
+        "y": 24
+      },
+      "targets": [
+        {
+          "expr": "rate(span_metrics_duration_milliseconds_count{service_name=~\"$service\",status_code=\"STATUS_CODE_ERROR\"}[5m])",
+          "legendFormat": "{{span_name}}",
+          "refId": "A"
+        }
+      ],
+      "id": 4
+    }
+  ],
+  "templating": {
+    "list": [
+      {
+        "name": "service",
+        "type": "query",
+        "datasource": "Prometheus",
+        "query": "label_values(span_metrics_duration_milliseconds_count, service_name)",
+        "refresh": 2,
+        "multi": false,
+        "includeAll": true,
+        "allValue": ".*"
+      }
+    ]
+  },
+  "refresh": "10s",
+  "style": "dark",
+  "tags": ["otel", "tempo", "traces"],
+  "schemaVersion": 36,
+  "title": "OTEL Traces Dashboard",
+  "version": 1
+}

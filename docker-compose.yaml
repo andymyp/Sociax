@@ -5,8 +5,49 @@ services:
     container_name: rabbitmq
     image: rabbitmq:management-alpine
     ports:
-      - "5672:5672"     # AMQP protocol
-      - "15672:15672"   # Management UI
+      - "5672:5672"   # Server
+      - "9090:15672"  # Management UI
     environment:
       RABBITMQ_DEFAULT_USER: sociax
       RABBITMQ_DEFAULT_PASS: '@sociax2025!!!'
+    restart: unless-stopped
+
+  otel-collector:
+    container_name: otel-collector
+    image: otel/opentelemetry-collector-contrib:latest
+    command: ["--config=/etc/otel/config.yaml"]
+    volumes:
+      - ./infras/otel/config.yaml:/etc/otel/config.yaml
+    ports:
+      - "4317:4317"  # OTLP gRPC
+      - "4318:4318"  # OTLP HTTP
+      - "8889:8889"  # Prometheus exporter
+    restart: unless-stopped
+
+  prometheus:
+    container_name: prometheus
+    image: prom/prometheus:latest
+    ports:
+      - "9091:9090"
+    volumes:
+      - ./infras/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    restart: unless-stopped
+    depends_on:
+      - otel-collector
+
+  grafana:
+    container_name: grafana
+    image: grafana/grafana:latest
+    ports:
+      - "9092:3000"
+    volumes:
+      - ./infras/grafana/dashboards:/etc/grafana/dashboards
+      - ./infras/grafana/provisioning/dashboards.yml:/etc/grafana/provisioning/dashboards/dashboards.yml
+      - ./infras/grafana/provisioning/datasources.yml:/etc/grafana/provisioning/datasources/datasources.yml
+    environment:
+      - GF_SECURITY_ADMIN_USER=sociax
+      - GF_SECURITY_ADMIN_PASSWORD=@sociax2025!!!
+      - GF_USERS_ALLOW_SIGN_UP=false
+    restart: unless-stopped
+    depends_on:
+      - prometheus
