@@ -1,0 +1,13 @@
+{
+  "name": "service-gateway",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "cross-env GOPATH=C:\\Users\\USER\\go GOCACHE=C:\\Users\\USER\\go\\cache go run main.go"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "packageManager": "pnpm@10.12.3"
+}
