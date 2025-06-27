@@ -1,15 +1,14 @@
 package routes
 
 import (
-	"Sociax/service-gateway/controllers"
-	"Sociax/shared-go/rabbitmq"
+	"Sociax/service-gateway/handlers"
 
 	"github.com/gofiber/fiber/v2"
 )
 
-func AuthRoutes(app *fiber.App, rpc *rabbitmq.RPCClient) {
+func AuthRoutes(app *fiber.App, handlers *handlers.Handlers) {
 	api := app.Group("/api")
 
-	user := api.Group("/auth")
-	user.Get("/status", controllers.Status(rpc))
+	route := api.Group("/auth")
+	route.Post("/sign-up", handlers.SignUp)
 }

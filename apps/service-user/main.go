@@ -1,11 +1,10 @@
 package main
 
 import (
-	"Sociax/service-auth/handlers"
-	"Sociax/service-auth/mailer"
-	"Sociax/service-auth/repository"
-	"Sociax/service-auth/routes"
-	"Sociax/service-auth/services"
+	"Sociax/service-user/handlers"
+	"Sociax/service-user/repository"
+	"Sociax/service-user/routes"
+	"Sociax/service-user/services"
 	"Sociax/shared-go/database"
 	"Sociax/shared-go/oteltracer"
 	"Sociax/shared-go/rabbitmq"
@@ -24,14 +23,6 @@ func main() {
 		utils.GetEnvOrFail("POSTGRES_PASS"),
 		utils.GetEnvOrFail("POSTGRES_DB"),
 		utils.GetEnvOrFail("POSTGRES_PORT"),
-	)
-
-	mailer.InitMailer(
-		utils.GetEnvOrFail("SMTP_HOST"),
-		utils.GetEnvOrFail("SMTP_PORT"),
-		utils.GetEnvOrFail("SMTP_USER"),
-		utils.GetEnvOrFail("SMTP_PASS"),
-		utils.GetEnvOrFail("SMTP_EMAIL"),
 	)
 	
 	cleanupTracer := oteltracer.InitTracer(
@@ -54,14 +45,14 @@ func main() {
 	defer rpc.Close()
 
 	repo := repository.NewRepository(db)
-	service := services.NewServices(repo, rpc) 
+	service := services.NewServices(repo) 
 	handler := handlers.NewHandlers(service, tracer)
 
 	err = rpc.Consume(routes.Routes(handler))
 	if err != nil {
-		log.Fatal("failed to consume auth service: ", err)
+		log.Fatal("failed to consume user service: ", err)
 	}
 
-	log.Println("Auth service is running.")
+	log.Println("User service is running.")
 	select {}
 }

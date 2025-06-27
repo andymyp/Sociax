@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 
+	"Sociax/service-gateway/handlers"
 	"Sociax/service-gateway/routes"
 	"Sociax/shared-go/otelmetrics"
 	"Sociax/shared-go/rabbitmq"
@@ -58,7 +59,9 @@ func main() {
 		return c.SendString("Gateway service is running.")
 	})
 
-	routes.AuthRoutes(app, rpc)
+	handler := handlers.NewHandlers(rpc)
+	
+	routes.AuthRoutes(app, handler)
 
 	PORT := utils.GetEnvOrFail("PORT")
 	if err:= app.Listen(":" + PORT); err != nil {

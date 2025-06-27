@@ -1,6 +1,17 @@
 version: '3.8'
 
 services:
+  postgres:
+    container_name: postgres
+    image: postgres:alpine
+    environment:
+      POSTGRES_USER: sociax
+      POSTGRES_PASSWORD: '@sociax2025!!!'
+      POSTGRES_DB: sociaxdb
+    ports:
+      - "5432:5432"
+    restart: unless-stopped
+
   rabbitmq:
     container_name: rabbitmq
     image: rabbitmq:management-alpine

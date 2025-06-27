@@ -65,7 +65,7 @@ func NewClient(cfg Config) (*RPCClient, error) {
 	return &RPCClient{conn: conn, ch: ch, queue: queue, logger: logger}, nil
 }
 
-func (c *RPCClient) Consume(controllers map[string]func([]byte) ([]byte, error)) error {
+func (c *RPCClient) Consume(routes map[string]func([]byte) ([]byte, error)) error {
 	msgs, err := c.ch.Consume(
 		c.queue.Name,
 		"",    // consumer tag
@@ -82,7 +82,7 @@ func (c *RPCClient) Consume(controllers map[string]func([]byte) ([]byte, error))
 	go func() {
 		for d := range msgs {
 			start := time.Now()
-			controller, exists := controllers[d.Type]
+			controller, exists := routes[d.Type]
 			if !exists {
 				c.logger.Printf("no controller for message type: %s", d.Type)
 				_ = d.Nack(false, false)
@@ -139,7 +139,7 @@ func (c *RPCClient) Publish(ctx context.Context, targetQueue, msgType string, pa
 
 	err = c.ch.Publish(
 		"",
-		targetQueue,
+		targetQueue+"_queue",
 		false,
 		false,
 		amqp.Publishing{
