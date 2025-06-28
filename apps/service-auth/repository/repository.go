@@ -27,7 +27,7 @@ func (r *repo) CreateOTP(emailOTP *models.EmailOTP) error {
 	return r.db.Clauses(clause.OnConflict{
 		Columns:   []clause.Column{{Name: "email"}},
 		DoUpdates: clause.AssignmentColumns([]string{
-			"otp", "expires_at", "used", "created_at",
+			"type", "otp", "expires_at", "used", "created_at",
 		}),
 	}).Create(emailOTP).Error
 	

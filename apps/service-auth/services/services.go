@@ -13,7 +13,7 @@ import (
 
 type Services interface {
 	SignUp(user models.SignUpRequest) (*rabbitmq.RPCError, error)
-	ForgotPassword(req models.EmailRequest) (*rabbitmq.RPCError, error)
+	SendEmailOTP(req models.OTPRequest) (*rabbitmq.RPCError, error)
 }
 
 type services struct {
@@ -44,8 +44,9 @@ func (s *services) SignUp(user models.SignUpRequest) (*rabbitmq.RPCError, error)
 	otp := utils.GenerateOTP()
 
 	emailOTP := models.EmailOTP{
-		Email:     user.Email,
-		OTP:       utils.Hashed(otp),
+		Email: user.Email,
+		Type: 0,
+		OTP: utils.Hashed(otp),
 		ExpiresAt: time.Now().Add(10 * time.Minute),
 	}
 
@@ -63,10 +64,10 @@ func (s *services) SignUp(user models.SignUpRequest) (*rabbitmq.RPCError, error)
 	return nil, nil
 }
 
-func (s *services) ForgotPassword(req models.EmailRequest) (*rabbitmq.RPCError, error) {
+func (s *services) SendEmailOTP(req models.OTPRequest) (*rabbitmq.RPCError, error) {
 	var res *rabbitmq.RPCResponse
 
-	body, _ := json.Marshal(req)
+	body, _ := json.Marshal(&models.EmailRequest{Email: req.Email})
 	pub, err := s.rpc.Publish(context.Background(), "user", "find-by-email", body)
 	if err != nil {
 		return nil, err
@@ -94,8 +95,9 @@ func (s *services) ForgotPassword(req models.EmailRequest) (*rabbitmq.RPCError, 
 	otp := utils.GenerateOTP()
 
 	emailOTP := models.EmailOTP{
-		Email:     user.Email,
-		OTP:       utils.Hashed(otp),
+		Email: user.Email,
+		Type: req.Type,
+		OTP: utils.Hashed(otp),
 		ExpiresAt: time.Now().Add(10 * time.Minute),
 	}
 

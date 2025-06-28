@@ -43,15 +43,16 @@ func (h *Handlers) SignUp(body []byte) ([]byte, error) {
 	}
 	
 	return rabbitmq.SuccessResponse(map[string]interface{}{
+		"type": 0,
 		"email": user.Email,
 	})
 }
 
-func (h *Handlers) ForgotPassword(body []byte) ([]byte, error) {
-	_, span := h.tracer.Start(context.Background(), "ForgotPassword")
+func (h *Handlers) SendEmailOTP(body []byte) ([]byte, error) {
+	_, span := h.tracer.Start(context.Background(), "SendEmailOTP")
 	defer span.End()
 
-	var req models.EmailRequest
+	var req models.OTPRequest
 
 	if err := json.Unmarshal(body, &req); err != nil {
 		return rabbitmq.ErrorResponse("Request is invalid", 400)
@@ -61,7 +62,7 @@ func (h *Handlers) ForgotPassword(body []byte) ([]byte, error) {
 		return rabbitmq.ErrorResponse(err.Error(), 400)
 	}
 
-	rpcErr, err := h.service.ForgotPassword(req);
+	rpcErr, err := h.service.SendEmailOTP(req);
 	if err != nil {
 		return rabbitmq.ErrorResponse(err.Error(), 500)
 	}
@@ -70,6 +71,7 @@ func (h *Handlers) ForgotPassword(body []byte) ([]byte, error) {
 	}
 	
 	return rabbitmq.SuccessResponse(map[string]interface{}{
+		"type": req.Type,
 		"email": req.Email,
 	})
 }

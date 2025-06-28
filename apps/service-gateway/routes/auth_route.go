@@ -9,7 +9,7 @@ import (
 func AuthRoutes(app *fiber.App, handlers *handlers.Handlers) {
 	api := app.Group("/api")
 	route := api.Group("/auth")
-
+	
 	route.Post("/sign-up", handlers.DynamicHandler("auth", "sign-up"))
-	route.Post("/forgot-password", handlers.DynamicHandler("auth", "forgot-password"))
+	route.Post("/send-email-otp", handlers.DynamicHandler("auth", "send-email-otp"))
 }

@@ -45,6 +45,7 @@ func (refreshToken *RefreshToken) BeforeCreate(tx *gorm.DB) (err error) {
 type EmailOTP struct {
 	ID        uuid.UUID `gorm:"type:uuid;primaryKey"`
 	Email     string    `gorm:"uniqueIndex;not null" validate:"required,email"`
+	Type      uint    	`gorm:"not null" validate:"required"` // 0: sign-up, 1: forgot-password
 	OTP       string    `gorm:"not null"`
 	ExpiresAt time.Time
 	Used      bool      `gorm:"default:false"`
@@ -60,6 +61,11 @@ type SignUpRequest struct {
 	Name  string `json:"name" validate:"required"`
 	Email string `json:"email" validate:"required,email"`
 	Password string `json:"password" validate:"required,min=6"`
+}
+
+type OTPRequest struct {
+	Email string `json:"email" validate:"required,email"`
+	Type uint `json:"type" validate:"oneof=0 1"`
 }
 
 type EmailRequest struct {
