@@ -19,7 +19,7 @@ type User struct {
 	UpdatedAt time.Time
 }
 
-func (u *User) BeforeCreate(tx *gorm.DB) (err error) {
-	u.ID = uuid.New()
+func (user *User) BeforeCreate(tx *gorm.DB) (err error) {
+	user.ID = uuid.New()
 	return
 }

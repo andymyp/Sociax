@@ -26,7 +26,6 @@ func NewRepository(db *gorm.DB) Repository {
 }
 
 func (r *repo) Create(user *models.User) error {
-	user.ID = uuid.New()
 	return r.db.Create(user).Error
 }
 

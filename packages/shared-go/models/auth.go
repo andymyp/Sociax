@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"gorm.io/gorm"
 )
 
 type AuthProvider struct {
@@ -19,6 +20,11 @@ type AuthProvider struct {
     UpdatedAt    time.Time
 }
 
+func (authProvider *AuthProvider) BeforeCreate(tx *gorm.DB) (err error) {
+	authProvider.ID = uuid.New()
+	return
+}
+
 type RefreshToken struct {
 	ID        uuid.UUID `gorm:"type:uuid;primaryKey"`
 	UserID    uuid.UUID `gorm:"type:uuid;not null"`
@@ -31,6 +37,11 @@ type RefreshToken struct {
 	UpdatedAt time.Time
 }
 
+func (refreshToken *RefreshToken) BeforeCreate(tx *gorm.DB) (err error) {
+	refreshToken.ID = uuid.New()
+	return
+}
+
 type EmailOTP struct {
 	ID        uuid.UUID `gorm:"type:uuid;primaryKey"`
 	Email     string    `gorm:"uniqueIndex;not null" validate:"required,email"`
@@ -38,6 +49,11 @@ type EmailOTP struct {
 	ExpiresAt time.Time
 	Used      bool      `gorm:"default:false"`
 	CreatedAt time.Time
+}
+
+func (emailOTP *EmailOTP) BeforeCreate(tx *gorm.DB) (err error) {
+	emailOTP.ID = uuid.New()
+	return
 }
 
 type SignUpRequest struct {

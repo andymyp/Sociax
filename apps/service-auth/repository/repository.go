@@ -3,7 +3,6 @@ package repository
 import (
 	"Sociax/shared-go/models"
 
-	"github.com/google/uuid"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 )
@@ -25,7 +24,6 @@ func NewRepository(db *gorm.DB) Repository {
 }
 
 func (r *repo) CreateOTP(emailOTP *models.EmailOTP) error {
-	emailOTP.ID = uuid.New()
 	return r.db.Clauses(clause.OnConflict{
 		Columns:   []clause.Column{{Name: "email"}},
 		DoUpdates: clause.AssignmentColumns([]string{
@@ -46,11 +44,9 @@ func (r *repo) UpdateOTP(emailOTP *models.EmailOTP) error {
 }
 
 func (r *repo) CreateAuthProvider(authProvider *models.AuthProvider) error {
-	authProvider.ID = uuid.New()
 	return r.db.Create(authProvider).Error
 }
 
 func (r *repo) CreateRefreshToken(refreshToken *models.RefreshToken) error {
-	refreshToken.ID = uuid.New()
 	return r.db.Create(refreshToken).Error
 }
