@@ -35,3 +35,22 @@ func (h *Handlers) SignUp(c *fiber.Ctx) error {
 
 	return c.JSON(res)
 }
+
+func (h *Handlers) ForgotPassword(c *fiber.Ctx) error {
+	var res rabbitmq.RPCResponse
+
+	pub, err := h.rpc.Publish(context.Background(), "auth", "forgot-password", c.Body())
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": err.Error(),
+		})
+	}
+
+	if err := json.Unmarshal(pub, &res); err != nil {
+		return c.Status(http.StatusInternalServerError).JSON(fiber.Map{
+			"error": err.Error(),
+		})
+	}
+
+	return c.JSON(res)
+}

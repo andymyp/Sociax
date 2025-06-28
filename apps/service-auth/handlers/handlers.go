@@ -21,7 +21,7 @@ func NewHandlers(s services.Services, t trace.Tracer) *Handlers {
 }
 
 func (h *Handlers) SignUp(body []byte) ([]byte, error) {
-	_, span := h.tracer.Start(context.Background(), "Sign Up")
+	_, span := h.tracer.Start(context.Background(), "SignUp")
 	defer span.End()
 
 	var user models.SignUpRequest
@@ -44,5 +44,32 @@ func (h *Handlers) SignUp(body []byte) ([]byte, error) {
 	
 	return rabbitmq.SuccessResponse(map[string]interface{}{
 		"email": user.Email,
+	})
+}
+
+func (h *Handlers) ForgotPassword(body []byte) ([]byte, error) {
+	_, span := h.tracer.Start(context.Background(), "ForgotPassword")
+	defer span.End()
+
+	var req models.EmailRequest
+
+	if err := json.Unmarshal(body, &req); err != nil {
+		return rabbitmq.ErrorResponse("Request is invalid", 400)
+	}
+
+	if err := utils.StructValidate(req); err != nil {
+		return rabbitmq.ErrorResponse(err.Error(), 400)
+	}
+
+	rpcErr, err := h.service.ForgotPassword(req);
+	if err != nil {
+		return rabbitmq.ErrorResponse(err.Error(), 500)
+	}
+	if rpcErr != nil {
+		return rabbitmq.ErrorResponse(rpcErr.Message, rpcErr.Code)
+	}
+	
+	return rabbitmq.SuccessResponse(map[string]interface{}{
+		"email": req.Email,
 	})
 }

@@ -11,4 +11,5 @@ func AuthRoutes(app *fiber.App, handlers *handlers.Handlers) {
 
 	route := api.Group("/auth")
 	route.Post("/sign-up", handlers.SignUp)
+	route.Post("/forgot-password", handlers.ForgotPassword)
 }

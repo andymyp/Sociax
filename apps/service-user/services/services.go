@@ -7,6 +7,7 @@ import (
 
 type Services interface {
 	Create(user *models.User) (int, error)
+	FindByEmail(email string) (*models.User, error)
 }
 
 type services struct {
@@ -31,4 +32,8 @@ func (s *services) Create(user *models.User) (int, error) {
 	}
 
 	return 1, s.repo.Create(user)
+}
+
+func (s *services) FindByEmail(email string) (*models.User, error) {
+	return s.repo.FindByEmail(email);
 }
