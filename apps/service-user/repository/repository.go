@@ -10,6 +10,7 @@ import (
 
 type Repository interface {
 	Create(user *models.User) error
+	CreateProvider(provider *models.AuthProvider) error
 	FindAll(filters map[string]string) (int64, []models.User, error)
 	FindByID(id uuid.UUID) (*models.User, error)
 	Update(user *models.User) error
@@ -27,6 +28,10 @@ func NewRepository(db *gorm.DB) Repository {
 
 func (r *repo) Create(user *models.User) error {
 	return r.db.Create(user).Error
+}
+
+func (r *repo) CreateProvider(provider *models.AuthProvider) error {
+	return r.db.Create(provider).Error
 }
 
 func (r *repo) FindAll(filters map[string]string) (int64, []models.User, error) {

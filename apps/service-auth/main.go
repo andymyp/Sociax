@@ -33,7 +33,7 @@ func main() {
 		utils.GetEnvOrFail("SMTP_PASS"),
 		utils.GetEnvOrFail("SMTP_EMAIL"),
 	)
-	
+
 	cleanupTracer := oteltracer.InitTracer(
 		utils.GetEnvOrFail("TRACER_ENDPOINT"),
 		utils.GetEnvOrFail("SERVICE_NAME"),
@@ -53,8 +53,10 @@ func main() {
 	}
 	defer rpc.Close()
 
+	services.InitJWT(utils.GetEnvOrFail("JWT_SECRET"))
+
 	repo := repository.NewRepository(db)
-	service := services.NewServices(repo, rpc) 
+	service := services.NewServices(repo, rpc)
 	handler := handlers.NewHandlers(service, tracer)
 
 	err = rpc.Consume(routes.Routes(handler))

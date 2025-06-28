@@ -9,8 +9,7 @@ import (
 
 type Repository interface {
 	CreateOTP(emailOTP *models.EmailOTP) error
-	FindOTP(email string) (*models.EmailOTP, error)
-	UpdateOTP(emailOTP *models.EmailOTP) error
+	FindOTP(req models.OTPRequest) (*models.EmailOTP, error)
 	CreateAuthProvider(authProvider *models.AuthProvider) error
 	CreateRefreshToken(refreshToken *models.RefreshToken) error
 }
@@ -25,22 +24,25 @@ func NewRepository(db *gorm.DB) Repository {
 
 func (r *repo) CreateOTP(emailOTP *models.EmailOTP) error {
 	return r.db.Clauses(clause.OnConflict{
-		Columns:   []clause.Column{{Name: "email"}},
+		Columns: []clause.Column{{Name: "email"}},
 		DoUpdates: clause.AssignmentColumns([]string{
-			"type", "otp", "expires_at", "used", "created_at",
+			"type", "otp", "expires_at", "created_at",
 		}),
 	}).Create(emailOTP).Error
-	
 }
 
-func (r *repo) FindOTP(email string) (*models.EmailOTP, error) {
+func (r *repo) FindOTP(req models.OTPRequest) (*models.EmailOTP, error) {
 	var emailOTP models.EmailOTP
-	err := r.db.Where("email = ?", email).First(&emailOTP).Error
-	return &emailOTP, err
-}
+	err := r.db.Where("email = ? AND type = ?", req.Email, req.Type).First(&emailOTP).Error
 
-func (r *repo) UpdateOTP(emailOTP *models.EmailOTP) error {
-	return r.db.Save(emailOTP).Error
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return nil, nil
+		}
+		return nil, err
+	}
+
+	return &emailOTP, err
 }
 
 func (r *repo) CreateAuthProvider(authProvider *models.AuthProvider) error {
@@ -48,5 +50,10 @@ func (r *repo) CreateAuthProvider(authProvider *models.AuthProvider) error {
 }
 
 func (r *repo) CreateRefreshToken(refreshToken *models.RefreshToken) error {
-	return r.db.Create(refreshToken).Error
+	return r.db.Clauses(clause.OnConflict{
+		Columns: []clause.Column{{Name: "user_id"}},
+		DoUpdates: clause.AssignmentColumns([]string{
+			"token", "revoked", "expires_at", "created_at",
+		}),
+	}).Create(refreshToken).Error
 }

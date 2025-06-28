@@ -8,16 +8,16 @@ import (
 )
 
 type AuthProvider struct {
-    ID           uuid.UUID `gorm:"type:uuid;primaryKey"`
-    UserID       uuid.UUID `gorm:"type:uuid;not null"`
-    User         User      `gorm:"constraint:OnDelete:CASCADE"`
-    Provider     string    `gorm:"type:varchar(20);not null" validate:"oneof=email google github"`
-    ProviderID   string    `gorm:"not null"`
-    AccessToken  *string
-    RefreshToken *string
+	ID           uuid.UUID `gorm:"type:uuid;primaryKey"`
+	UserID       uuid.UUID `gorm:"type:uuid;not null"`
+	User         User      `gorm:"constraint:OnDelete:CASCADE"`
+	Provider     string    `gorm:"type:varchar(20);not null" validate:"oneof=email google github"`
+	ProviderID   string    `gorm:"not null"`
+	AccessToken  *string   `json:"access_token,omitempty"`
+	RefreshToken *string   `json:"refresh_token,omitempty"`
 
-    CreatedAt    time.Time
-    UpdatedAt    time.Time
+	CreatedAt time.Time
+	UpdatedAt time.Time
 }
 
 func (authProvider *AuthProvider) BeforeCreate(tx *gorm.DB) (err error) {
@@ -27,12 +27,12 @@ func (authProvider *AuthProvider) BeforeCreate(tx *gorm.DB) (err error) {
 
 type RefreshToken struct {
 	ID        uuid.UUID `gorm:"type:uuid;primaryKey"`
-	UserID    uuid.UUID `gorm:"type:uuid;not null"`
+	UserID    uuid.UUID `gorm:"type:uuid;uniqueIndex;not null"`
 	User      User      `gorm:"constraint:OnDelete:CASCADE"`
 	Token     string    `gorm:"uniqueIndex;not null"`
 	Revoked   bool      `gorm:"default:false"`
 	ExpiresAt time.Time
-	
+
 	CreatedAt time.Time
 	UpdatedAt time.Time
 }
@@ -45,10 +45,9 @@ func (refreshToken *RefreshToken) BeforeCreate(tx *gorm.DB) (err error) {
 type EmailOTP struct {
 	ID        uuid.UUID `gorm:"type:uuid;primaryKey"`
 	Email     string    `gorm:"uniqueIndex;not null" validate:"required,email"`
-	Type      uint    	`gorm:"not null" validate:"required"` // 0: sign-up, 1: forgot-password
+	Type      uint      `gorm:"not null" validate:"required"` // 0: sign-up, 1: forgot-password
 	OTP       string    `gorm:"not null"`
 	ExpiresAt time.Time
-	Used      bool      `gorm:"default:false"`
 	CreatedAt time.Time
 }
 
@@ -58,16 +57,27 @@ func (emailOTP *EmailOTP) BeforeCreate(tx *gorm.DB) (err error) {
 }
 
 type SignUpRequest struct {
-	Name  string `json:"name" validate:"required"`
-	Email string `json:"email" validate:"required,email"`
+	Name     string `json:"name" validate:"required"`
+	Email    string `json:"email" validate:"required,email"`
 	Password string `json:"password" validate:"required,min=6"`
 }
 
 type OTPRequest struct {
 	Email string `json:"email" validate:"required,email"`
-	Type uint `json:"type" validate:"oneof=0 1"`
+	Type  uint   `json:"type" validate:"oneof=0 1"`
 }
 
 type EmailRequest struct {
 	Email string `json:"email" validate:"required,email"`
+}
+
+type VerifyOTPRequest struct {
+	Email string `json:"email" validate:"required,email"`
+	Type  uint   `json:"type" validate:"oneof=0 1"`
+	OTP   string `json:"otp" validate:"required,min=6"`
+}
+
+type AuthResponse struct {
+	AccessToken  string `json:"access_token"`
+	RefreshToken string `json:"refresh_token"`
 }
