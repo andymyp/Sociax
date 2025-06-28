@@ -26,7 +26,7 @@
         {
           "expr": "rate(http_server_duration_milliseconds_count{exported_job=~\"$exported_job\"}[1m])",
           "interval": "",
-          "legendFormat": "{{http_route}}",
+          "legendFormat": "{{exported_job}}",
           "refId": "A"
         }
       ],
@@ -62,30 +62,6 @@
     {
       "datasource": "Prometheus",
       "fieldConfig": {
-        "defaults": {},
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 24,
-        "x": 0,
-        "y": 16
-      },
-      "id": 3,
-      "targets": [
-        {
-          "expr": "http_server_active_requests{exported_job=~\"$exported_job\"}",
-          "interval": "",
-          "legendFormat": "{{http_route}}",
-          "refId": "A"
-        }
-      ],
-      "title": "Active HTTP Requests",
-      "type": "timeseries"
-    },
-    {
-      "datasource": "Prometheus",
-      "fieldConfig": {
         "defaults": {
           "unit": "bytes"
         },
@@ -94,7 +70,7 @@
       "gridPos": {
         "h": 8,
         "w": 12,
-        "x": 12,
+        "x": 0,
         "y": 16
       },
       "id": 4,
@@ -120,8 +96,8 @@
       "gridPos": {
         "h": 8,
         "w": 12,
-        "x": 0,
-        "y": 24
+        "x": 12,
+        "y": 16
       },
       "id": 5,
       "targets": [

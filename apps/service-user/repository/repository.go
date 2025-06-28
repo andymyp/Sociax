@@ -10,6 +10,7 @@ import (
 
 type Repository interface {
 	Create(user *models.User) error
+	CreateProvider(provider *models.AuthProvider) error
 	FindAll(filters map[string]string) (int64, []models.User, error)
 	FindByID(id uuid.UUID) (*models.User, error)
 	Update(user *models.User) error
@@ -26,8 +27,11 @@ func NewRepository(db *gorm.DB) Repository {
 }
 
 func (r *repo) Create(user *models.User) error {
-	user.ID = uuid.New()
 	return r.db.Create(user).Error
+}
+
+func (r *repo) CreateProvider(provider *models.AuthProvider) error {
+	return r.db.Create(provider).Error
 }
 
 func (r *repo) FindAll(filters map[string]string) (int64, []models.User, error) {
@@ -56,6 +60,14 @@ func (r *repo) FindAll(filters map[string]string) (int64, []models.User, error) 
 func (r *repo) FindByID(id uuid.UUID) (*models.User, error) {
 	var user models.User
 	err := r.db.First(&user, id).Error
+
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return nil, nil
+		}
+		return nil, err
+	}
+	
 	return &user, err
 }
 
@@ -70,5 +82,13 @@ func (r *repo) Delete(id uuid.UUID) error {
 func (r *repo) FindByEmail(email string) (*models.User, error) {
 	var user models.User
 	err := r.db.Where("email = ?", email).First(&user).Error
-	return &user, err
+
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return nil, nil
+		}
+		return nil, err
+	}
+
+	return &user, nil
 }

@@ -21,7 +21,7 @@ func NewHandlers(s services.Services, t trace.Tracer) *Handlers {
 }
 
 func (h *Handlers) Create(body []byte) ([]byte, error) {
-	_, span := h.tracer.Start(context.Background(), "Create User")
+	_, span := h.tracer.Start(context.Background(), "CreateUser")
 	defer span.End()
 
 	var user models.User
@@ -34,17 +34,61 @@ func (h *Handlers) Create(body []byte) ([]byte, error) {
 		return rabbitmq.ErrorResponse(err.Error(), 400)
 	}
 
-	status, err := h.service.Create(&user);
-	
+	rpcErr, err := h.service.Create(&user)
+
 	if err != nil {
 		return rabbitmq.ErrorResponse(err.Error(), 500)
 	}
-
-	if status == 0 {
-		return rabbitmq.ErrorResponse("Email already registered", 409)
+	if rpcErr != nil {
+		return rabbitmq.ErrorResponse(rpcErr.Message, rpcErr.Code)
 	}
 	
 	return rabbitmq.SuccessResponse(map[string]interface{}{
 		"email": user.Email,
 	})
+}
+
+func (h *Handlers) FindByEmail(body []byte) ([]byte, error) {
+	_, span := h.tracer.Start(context.Background(), "UserByEmail")
+	defer span.End()
+
+	var req models.EmailRequest
+
+	if err := json.Unmarshal(body, &req); err != nil {
+		return rabbitmq.ErrorResponse("Request is invalid", 400)
+	}
+
+	if err := utils.StructValidate(req); err != nil {
+		return rabbitmq.ErrorResponse(err.Error(), 400)
+	}
+
+	user, err := h.service.FindByEmail(req.Email);
+	
+	if err != nil {
+		return rabbitmq.ErrorResponse(err.Error(), 500)
+	}
+	
+	return rabbitmq.SuccessResponse(user)
+}
+
+func (h *Handlers) Update(body []byte) ([]byte, error) {
+	_, span := h.tracer.Start(context.Background(), "UpdateUser")
+	defer span.End()
+
+	var req *models.User
+
+	if err := json.Unmarshal(body, &req); err != nil {
+		return rabbitmq.ErrorResponse("Request is invalid", 400)
+	}
+
+	if err := utils.StructValidate(req); err != nil {
+		return rabbitmq.ErrorResponse(err.Error(), 400)
+	}
+
+	user, err := h.service.Update(req)
+	if err != nil {
+		return rabbitmq.ErrorResponse(err.Error(), 500)
+	}
+	
+	return rabbitmq.SuccessResponse(user)
 }

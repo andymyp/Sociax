@@ -13,7 +13,7 @@ import (
 
 type Handlers struct {
 	service services.Services
-	tracer trace.Tracer
+	tracer  trace.Tracer
 }
 
 func NewHandlers(s services.Services, t trace.Tracer) *Handlers {
@@ -21,7 +21,7 @@ func NewHandlers(s services.Services, t trace.Tracer) *Handlers {
 }
 
 func (h *Handlers) SignUp(body []byte) ([]byte, error) {
-	_, span := h.tracer.Start(context.Background(), "Sign Up")
+	_, span := h.tracer.Start(context.Background(), "SignUp")
 	defer span.End()
 
 	var user models.SignUpRequest
@@ -34,11 +34,75 @@ func (h *Handlers) SignUp(body []byte) ([]byte, error) {
 		return rabbitmq.ErrorResponse(err.Error(), 400)
 	}
 
-	if err := h.service.SignUp(user); err != nil {
+	rpcErr, err := h.service.SignUp(user)
+	if err != nil {
 		return rabbitmq.ErrorResponse(err.Error(), 500)
 	}
-	
+	if rpcErr != nil {
+		return rabbitmq.ErrorResponse(rpcErr.Message, rpcErr.Code)
+	}
+
 	return rabbitmq.SuccessResponse(map[string]interface{}{
+		"type":  0,
 		"email": user.Email,
+	})
+}
+
+func (h *Handlers) SendEmailOTP(body []byte) ([]byte, error) {
+	_, span := h.tracer.Start(context.Background(), "SendEmailOTP")
+	defer span.End()
+
+	var req models.OTPRequest
+
+	if err := json.Unmarshal(body, &req); err != nil {
+		return rabbitmq.ErrorResponse("Request is invalid", 400)
+	}
+
+	if err := utils.StructValidate(req); err != nil {
+		return rabbitmq.ErrorResponse(err.Error(), 400)
+	}
+
+	rpcErr, err := h.service.SendEmailOTP(req)
+	if err != nil {
+		return rabbitmq.ErrorResponse(err.Error(), 500)
+	}
+	if rpcErr != nil {
+		return rabbitmq.ErrorResponse(rpcErr.Message, rpcErr.Code)
+	}
+
+	return rabbitmq.SuccessResponse(map[string]interface{}{
+		"type":  req.Type,
+		"email": req.Email,
+	})
+}
+
+func (h *Handlers) VerifyOTP(body []byte) ([]byte, error) {
+	_, span := h.tracer.Start(context.Background(), "VerifyOTP")
+	defer span.End()
+
+	var req models.VerifyOTPRequest
+
+	if err := json.Unmarshal(body, &req); err != nil {
+		return rabbitmq.ErrorResponse("Request is invalid", 400)
+	}
+
+	if err := utils.StructValidate(req); err != nil {
+		return rabbitmq.ErrorResponse(err.Error(), 400)
+	}
+
+	res, rpcErr, err := h.service.VerifyOTP(req)
+	if err != nil {
+		return rabbitmq.ErrorResponse(err.Error(), 500)
+	}
+	if rpcErr != nil {
+		return rabbitmq.ErrorResponse(rpcErr.Message, rpcErr.Code)
+	}
+	if res != nil {
+		return rabbitmq.SuccessResponse(res)
+	}
+
+	return rabbitmq.SuccessResponse(map[string]interface{}{
+		"type":  req.Type,
+		"email": req.Email,
 	})
 }

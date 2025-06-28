@@ -6,6 +6,7 @@ replace Sociax/shared-go => ../../packages/shared-go
 
 require (
 	Sociax/shared-go v0.0.0
+	github.com/golang-jwt/jwt/v5 v5.2.2
 	github.com/google/uuid v1.6.0
 	go.opentelemetry.io/otel v1.37.0
 	go.opentelemetry.io/otel/trace v1.37.0
