@@ -41,7 +41,7 @@ func (h *Handlers) Create(body []byte) ([]byte, error) {
 	}
 
 	if status == 0 {
-		return rabbitmq.ErrorResponse("Email already registered", 409)
+		return rabbitmq.ErrorResponse("Email is already registered", 409)
 	}
 	
 	return rabbitmq.SuccessResponse(map[string]interface{}{

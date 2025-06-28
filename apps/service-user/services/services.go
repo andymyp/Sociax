@@ -26,6 +26,7 @@ func (s *services) Create(user *models.User) (int, error) {
 
 	if check != nil && !check.Confirmed {
 		user.ID = check.ID
+		user.CreatedAt = check.CreatedAt
 		return 1, s.repo.Update(user)
 	}
 

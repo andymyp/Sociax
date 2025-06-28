@@ -34,8 +34,12 @@ func (h *Handlers) SignUp(body []byte) ([]byte, error) {
 		return rabbitmq.ErrorResponse(err.Error(), 400)
 	}
 
-	if err := h.service.SignUp(user); err != nil {
+	rpcErr, err := h.service.SignUp(user);
+	if err != nil {
 		return rabbitmq.ErrorResponse(err.Error(), 500)
+	}
+	if rpcErr != nil {
+		return rabbitmq.ErrorResponse(rpcErr.Message, rpcErr.Code)
 	}
 	
 	return rabbitmq.SuccessResponse(map[string]interface{}{
