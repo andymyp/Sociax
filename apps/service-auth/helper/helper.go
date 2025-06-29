@@ -1,7 +1,9 @@
-package services
+package helper
 
 import (
 	"Sociax/shared-go/models"
+	"fmt"
+	"math/rand"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
@@ -30,4 +32,8 @@ func ParseToken(tokenStr string) (*jwt.Token, error) {
 	return jwt.Parse(tokenStr, func(token *jwt.Token) (interface{}, error) {
 		return jwtSecret, nil
 	})
+}
+
+func GenerateOTP() string {
+	return fmt.Sprintf("%06d", rand.Intn(1000000))
 }

@@ -1,0 +1,21 @@
+package services
+
+import (
+	"Sociax/service-auth/repository"
+	"Sociax/shared-go/models"
+	"Sociax/shared-go/rabbitmq"
+)
+
+type Services interface {
+	SignUp(req *models.User) (*rabbitmq.RPCError, error)
+	SendEmailOTP(req models.OTPRequest) (*rabbitmq.RPCError, error)
+	VerifyOTP(req models.VerifyOTPRequest) (*models.AuthResponse, *rabbitmq.RPCError, error)
+}
+
+type services struct {
+	repo repository.Repository
+}
+
+func NewServices(repo repository.Repository) Services {
+	return &services{repo}
+}

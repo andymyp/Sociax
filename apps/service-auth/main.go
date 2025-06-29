@@ -2,6 +2,7 @@ package main
 
 import (
 	"Sociax/service-auth/handlers"
+	"Sociax/service-auth/helper"
 	"Sociax/service-auth/mailer"
 	"Sociax/service-auth/repository"
 	"Sociax/service-auth/routes"
@@ -53,7 +54,7 @@ func main() {
 	}
 	defer rpc.Close()
 
-	services.InitJWT(utils.GetEnvOrFail("JWT_SECRET"))
+	helper.InitJWT(utils.GetEnvOrFail("JWT_SECRET"))
 
 	repo := repository.NewRepository(db)
 	service := services.NewServices(repo)
