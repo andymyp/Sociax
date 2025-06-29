@@ -11,5 +11,6 @@ func Routes(handlers *handlers.Handlers) map[string]func([]byte) ([]byte, error)
 		"send-email-otp": handlers.SendEmailOTP,
 		"verify-otp":     handlers.VerifyOTP,
 		"reset-password": handlers.ResetPassword,
+		"sign-in":        handlers.SignIn,
 	}
 }

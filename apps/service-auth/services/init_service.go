@@ -11,6 +11,7 @@ type Services interface {
 	SendEmailOTP(req *models.OTPRequest) (*rabbitmq.RPCError, error)
 	VerifyOTP(req *models.VerifyOTPRequest) (*models.AuthResponse, *rabbitmq.RPCError, error)
 	ResetPassword(req *models.ResetPasswordRequest) (*models.AuthResponse, *rabbitmq.RPCError, error)
+	SignIn(req *models.SignInRequest) (*models.AuthResponse, *rabbitmq.RPCError, error)
 }
 
 type services struct {

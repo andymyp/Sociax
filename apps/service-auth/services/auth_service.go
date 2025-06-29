@@ -86,11 +86,56 @@ func (s *services) ResetPassword(req *models.ResetPasswordRequest) (*models.Auth
 		return nil, err, nil
 	}
 
-	hashedPass := utils.Hashed(*user.Password)
+	hashedPass := utils.Hashed(req.Password)
 	user.Password = &hashedPass
 
 	if err := s.repo.UpdateUser(user); err != nil {
 		return nil, nil, err
+	}
+
+	user.Password = nil
+	user.Providers = nil
+	accessToken, err := helper.GenerateAccessToken(user)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	refreshToken := utils.Hashed(uuid.NewString())
+
+	rt := &models.RefreshToken{
+		UserID:    user.ID,
+		Token:     refreshToken,
+		ExpiresAt: time.Now().Add(7 * 24 * time.Hour),
+	}
+
+	if err := s.repo.CreateRefreshToken(rt); err != nil {
+		return nil, nil, err
+	}
+
+	authResponse := &models.AuthResponse{
+		AccessToken:  accessToken,
+		RefreshToken: refreshToken,
+	}
+
+	return authResponse, nil, nil
+}
+
+func (s *services) SignIn(req *models.SignInRequest) (*models.AuthResponse, *rabbitmq.RPCError, error) {
+	user, err := s.repo.GetUserByEmail(req.Email)
+	if err != nil {
+		return nil, nil, err
+	}
+	if user == nil {
+		err := &rabbitmq.RPCError{Message: "Invalid email or password", Code: 401}
+		return nil, err, nil
+	}
+	if !user.Confirmed {
+		err := &rabbitmq.RPCError{Message: "Invalid email or password", Code: 401}
+		return nil, err, nil
+	}
+	if err := utils.HashCompare(*user.Password, req.Password); err != nil {
+		err := &rabbitmq.RPCError{Message: "Invalid email or password", Code: 401}
+		return nil, err, nil
 	}
 
 	user.Password = nil
