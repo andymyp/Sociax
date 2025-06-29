@@ -3,19 +3,20 @@ package models
 import (
 	"time"
 
+	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
 type AuthProvider struct {
-	ID         uuid.UUID `gorm:"type:uuid;primaryKey"`
-	UserID     uuid.UUID `gorm:"type:uuid;not null;index"`
-	User       User      `gorm:"constraint:OnDelete:CASCADE" json:"user,omitempty"`
-	Provider   string    `gorm:"type:varchar(20);not null;index" validate:"oneof=email google github"`
-	ProviderID string    `gorm:"not null"`
+	ID         uuid.UUID `gorm:"type:uuid;primaryKey" json:"id"`
+	UserID     uuid.UUID `gorm:"type:uuid;not null;index" json:"user_id"`
+	Provider   string    `gorm:"type:varchar(20);not null;index" json:"provider" validate:"oneof=email google github"`
+	ProviderID string    `gorm:"not null" json:"provider_id"`
+	CreatedAt  time.Time `json:"created_at"`
+	UpdatedAt  time.Time `json:"updated_at"`
 
-	CreatedAt time.Time
-	UpdatedAt time.Time
+	User User `gorm:"constraint:OnDelete:CASCADE" json:"user,omitempty"`
 }
 
 func (authProvider *AuthProvider) BeforeCreate(tx *gorm.DB) (err error) {
@@ -24,15 +25,15 @@ func (authProvider *AuthProvider) BeforeCreate(tx *gorm.DB) (err error) {
 }
 
 type RefreshToken struct {
-	ID        uuid.UUID `gorm:"type:uuid;primaryKey"`
-	UserID    uuid.UUID `gorm:"type:uuid;uniqueIndex;not null"`
-	User      User      `gorm:"constraint:OnDelete:CASCADE" json:"user,omitempty"`
-	Token     string    `gorm:"uniqueIndex;not null"`
-	Revoked   bool      `gorm:"default:false"`
-	ExpiresAt time.Time
+	ID        uuid.UUID `gorm:"type:uuid;primaryKey" json:"id"`
+	UserID    uuid.UUID `gorm:"type:uuid;uniqueIndex;not null" json:"user_id"`
+	Token     string    `gorm:"uniqueIndex;not null" json:"token"`
+	Revoked   bool      `gorm:"default:false" json:"revoked"`
+	ExpiresAt time.Time `json:"expires_at"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
 
-	CreatedAt time.Time
-	UpdatedAt time.Time
+	User User `gorm:"constraint:OnDelete:CASCADE" json:"user,omitempty"`
 }
 
 func (refreshToken *RefreshToken) BeforeCreate(tx *gorm.DB) (err error) {
@@ -41,18 +42,23 @@ func (refreshToken *RefreshToken) BeforeCreate(tx *gorm.DB) (err error) {
 }
 
 type EmailOTP struct {
-	ID        uuid.UUID `gorm:"type:uuid;primaryKey"`
-	Email     string    `gorm:"uniqueIndex;not null" validate:"required,email"`
-	Type      uint      `gorm:"not null" validate:"required"` // 0: sign-up, 1: forgot-password
-	OTP       string    `gorm:"not null"`
-	Used      bool      `gorm:"default:false"`
-	ExpiresAt time.Time
-	CreatedAt time.Time
+	ID        uuid.UUID `gorm:"type:uuid;primaryKey" json:"id"`
+	Email     string    `gorm:"uniqueIndex;not null" json:"email" validate:"required,email"`
+	Type      uint      `gorm:"not null" json:"type" validate:"required"` // 0: sign-up, 1: forgot-password
+	OTP       string    `gorm:"not null" json:"otp"`
+	Used      bool      `gorm:"default:false" json:"used"`
+	ExpiresAt time.Time `json:"expires_at"`
+	CreatedAt time.Time `json:"created_at"`
 }
 
 func (emailOTP *EmailOTP) BeforeCreate(tx *gorm.DB) (err error) {
 	emailOTP.ID = uuid.New()
 	return
+}
+
+type JwtClaims struct {
+	*User
+	jwt.RegisteredClaims
 }
 
 type OTPRequest struct {

@@ -8,17 +8,17 @@ import (
 )
 
 type User struct {
-	ID        uuid.UUID `gorm:"type:uuid;primaryKey"`
-	Name      string    `gorm:"not null" validate:"required"`
-	Email     string    `gorm:"uniqueIndex;not null" validate:"required,email"`
+	ID        uuid.UUID `gorm:"type:uuid;primaryKey" json:"id"`
+	Name      string    `gorm:"not null" json:"name" validate:"required"`
+	Email     string    `gorm:"uniqueIndex;not null" json:"email" validate:"required,email"`
 	Password  *string   `gorm:"type:text" json:"password,omitempty" validate:"required,min=6"`
-	AvatarURL string    `gorm:"type:text"`
-	Confirmed bool      `gorm:"default:false"`
+	AvatarURL string    `gorm:"type:text" json:"avatar_url"`
+	Confirmed bool      `gorm:"default:false" json:"confirmed"`
+	Online    bool      `gorm:"default:false" json:"online"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
 
 	Providers []AuthProvider `gorm:"constraint:OnDelete:CASCADE" json:"providers,omitempty"`
-
-	CreatedAt time.Time
-	UpdatedAt time.Time
 }
 
 func (user *User) BeforeCreate(tx *gorm.DB) (err error) {

@@ -19,7 +19,7 @@ import (
 )
 
 func main() {
-  utils.LoadEnv()
+	utils.LoadEnv()
 
 	cleanupMatrics := otelmetrics.InitMetrics(
 		utils.GetEnvOrFail("METRICS_ENDPOINT"),
@@ -48,7 +48,7 @@ func main() {
 	app.Use(limiter.New())
 
 	app.Use(logger.New(logger.Config{
-		Format:     "[${time}] ${status} - ${method} ${path} ${latency} ${error}\n",
+		Format:     "[${time}] ${status} - ${method} ${path} ${latency}\n",
 		TimeFormat: "2006/01/02 15:04:05",
 		TimeZone:   "Asia/Jakarta",
 	}))
@@ -60,11 +60,11 @@ func main() {
 	})
 
 	handler := handlers.NewHandlers(rpc)
-	
+
 	routes.AuthRoutes(app, handler)
 
 	PORT := utils.GetEnvOrFail("PORT")
-	if err:= app.Listen(":" + PORT); err != nil {
+	if err := app.Listen(":" + PORT); err != nil {
 		log.Fatal(err.Error())
 	}
 }

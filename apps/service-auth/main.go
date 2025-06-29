@@ -56,7 +56,7 @@ func main() {
 	services.InitJWT(utils.GetEnvOrFail("JWT_SECRET"))
 
 	repo := repository.NewRepository(db)
-	service := services.NewServices(repo, rpc)
+	service := services.NewServices(repo)
 	handler := handlers.NewHandlers(service, tracer)
 
 	err = rpc.Consume(routes.Routes(handler))

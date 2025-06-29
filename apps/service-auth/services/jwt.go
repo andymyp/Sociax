@@ -7,19 +7,14 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 )
 
-type JwtClaims struct {
-	models.User
-	jwt.RegisteredClaims
-}
-
 var jwtSecret []byte
 
 func InitJWT(secret string) {
 	jwtSecret = []byte(secret)
 }
 
-func GenerateAccessToken(user models.User) (string, error) {
-	claims := JwtClaims{
+func GenerateAccessToken(user *models.User) (string, error) {
+	claims := models.JwtClaims{
 		User: user,
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(time.Now().Add(15 * time.Minute)),

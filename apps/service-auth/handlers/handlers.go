@@ -24,7 +24,7 @@ func (h *Handlers) SignUp(body []byte) ([]byte, error) {
 	_, span := h.tracer.Start(context.Background(), "SignUp")
 	defer span.End()
 
-	var user models.User
+	var user *models.User
 
 	if err := json.Unmarshal(body, &user); err != nil {
 		return rabbitmq.ErrorResponse("Request is invalid", 400)
