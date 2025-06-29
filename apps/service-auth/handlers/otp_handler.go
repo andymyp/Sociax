@@ -12,7 +12,7 @@ func (h *Handlers) SendEmailOTP(body []byte) ([]byte, error) {
 	_, span := h.tracer.Start(context.Background(), "SendEmailOTP")
 	defer span.End()
 
-	var req models.OTPRequest
+	var req *models.OTPRequest
 
 	if err := json.Unmarshal(body, &req); err != nil {
 		return rabbitmq.ErrorResponse("Request is invalid", 400)
@@ -40,7 +40,7 @@ func (h *Handlers) VerifyOTP(body []byte) ([]byte, error) {
 	_, span := h.tracer.Start(context.Background(), "VerifyOTP")
 	defer span.End()
 
-	var req models.VerifyOTPRequest
+	var req *models.VerifyOTPRequest
 
 	if err := json.Unmarshal(body, &req); err != nil {
 		return rabbitmq.ErrorResponse("Request is invalid", 400)

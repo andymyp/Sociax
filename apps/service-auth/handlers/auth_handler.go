@@ -35,3 +35,28 @@ func (h *Handlers) SignUp(body []byte) ([]byte, error) {
 		"email": user.Email,
 	})
 }
+
+func (h *Handlers) ResetPassword(body []byte) ([]byte, error) {
+	_, span := h.tracer.Start(context.Background(), "ResetPassword")
+	defer span.End()
+
+	var req *models.ResetPasswordRequest
+
+	if err := json.Unmarshal(body, &req); err != nil {
+		return rabbitmq.ErrorResponse("Request is invalid", 400)
+	}
+
+	if err := utils.StructValidate(req); err != nil {
+		return rabbitmq.ErrorResponse(err.Error(), 400)
+	}
+
+	res, rpcErr, err := h.service.ResetPassword(req)
+	if err != nil {
+		return rabbitmq.ErrorResponse(err.Error(), 500)
+	}
+	if rpcErr != nil {
+		return rabbitmq.ErrorResponse(rpcErr.Message, rpcErr.Code)
+	}
+
+	return rabbitmq.SuccessResponse(res)
+}

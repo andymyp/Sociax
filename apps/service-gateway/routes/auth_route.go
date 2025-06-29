@@ -13,4 +13,5 @@ func AuthRoutes(app *fiber.App, handlers *handlers.Handlers) {
 	route.Post("/sign-up", handlers.DynamicHandler("auth", "sign-up"))
 	route.Post("/send-email-otp", handlers.DynamicHandler("auth", "send-email-otp"))
 	route.Post("/verify-otp", handlers.DynamicHandler("auth", "verify-otp"))
+	route.Post("/reset-password", handlers.DynamicHandler("auth", "reset-password"))
 }

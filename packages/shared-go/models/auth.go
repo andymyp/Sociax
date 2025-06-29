@@ -61,13 +61,13 @@ type JwtClaims struct {
 	jwt.RegisteredClaims
 }
 
+type EmailRequest struct {
+	Email string `json:"email" validate:"required,email"`
+}
+
 type OTPRequest struct {
 	Email string `json:"email" validate:"required,email"`
 	Type  uint   `json:"type" validate:"oneof=0 1"`
-}
-
-type EmailRequest struct {
-	Email string `json:"email" validate:"required,email"`
 }
 
 type VerifyOTPRequest struct {
@@ -79,4 +79,10 @@ type VerifyOTPRequest struct {
 type AuthResponse struct {
 	AccessToken  string `json:"access_token"`
 	RefreshToken string `json:"refresh_token"`
+}
+
+type ResetPasswordRequest struct {
+	Email           string `json:"email" validate:"required,email"`
+	Password        string `json:"password" validate:"required,min=6"`
+	ConfirmPassword string `json:"confirm_password" validate:"required,eqfield=Password"`
 }

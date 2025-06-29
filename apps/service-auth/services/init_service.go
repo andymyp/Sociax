@@ -8,8 +8,9 @@ import (
 
 type Services interface {
 	SignUp(req *models.User) (*rabbitmq.RPCError, error)
-	SendEmailOTP(req models.OTPRequest) (*rabbitmq.RPCError, error)
-	VerifyOTP(req models.VerifyOTPRequest) (*models.AuthResponse, *rabbitmq.RPCError, error)
+	SendEmailOTP(req *models.OTPRequest) (*rabbitmq.RPCError, error)
+	VerifyOTP(req *models.VerifyOTPRequest) (*models.AuthResponse, *rabbitmq.RPCError, error)
+	ResetPassword(req *models.ResetPasswordRequest) (*models.AuthResponse, *rabbitmq.RPCError, error)
 }
 
 type services struct {

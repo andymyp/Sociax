@@ -7,6 +7,8 @@ import (
 	"Sociax/shared-go/rabbitmq"
 	"Sociax/shared-go/utils"
 	"time"
+
+	"github.com/google/uuid"
 )
 
 func (s *services) SignUp(req *models.User) (*rabbitmq.RPCError, error) {
@@ -72,4 +74,48 @@ func (s *services) SignUp(req *models.User) (*rabbitmq.RPCError, error) {
 	go mailer.SendEmailOTP(req.Email, dataOTP)
 
 	return nil, nil
+}
+
+func (s *services) ResetPassword(req *models.ResetPasswordRequest) (*models.AuthResponse, *rabbitmq.RPCError, error) {
+	user, err := s.repo.GetUserByEmail(req.Email)
+	if err != nil {
+		return nil, nil, err
+	}
+	if user == nil {
+		err := &rabbitmq.RPCError{Message: "Email is not registered", Code: 404}
+		return nil, err, nil
+	}
+
+	hashedPass := utils.Hashed(*user.Password)
+	user.Password = &hashedPass
+
+	if err := s.repo.UpdateUser(user); err != nil {
+		return nil, nil, err
+	}
+
+	user.Password = nil
+	user.Providers = nil
+	accessToken, err := helper.GenerateAccessToken(user)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	refreshToken := utils.Hashed(uuid.NewString())
+
+	rt := &models.RefreshToken{
+		UserID:    user.ID,
+		Token:     refreshToken,
+		ExpiresAt: time.Now().Add(7 * 24 * time.Hour),
+	}
+
+	if err := s.repo.CreateRefreshToken(rt); err != nil {
+		return nil, nil, err
+	}
+
+	authResponse := &models.AuthResponse{
+		AccessToken:  accessToken,
+		RefreshToken: refreshToken,
+	}
+
+	return authResponse, nil, nil
 }

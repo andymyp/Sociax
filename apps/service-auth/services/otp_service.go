@@ -11,7 +11,7 @@ import (
 	"github.com/google/uuid"
 )
 
-func (s *services) SendEmailOTP(req models.OTPRequest) (*rabbitmq.RPCError, error) {
+func (s *services) SendEmailOTP(req *models.OTPRequest) (*rabbitmq.RPCError, error) {
 	user, err := s.repo.GetUserByEmail(req.Email)
 	if err != nil {
 		return nil, err
@@ -63,7 +63,7 @@ func (s *services) SendEmailOTP(req models.OTPRequest) (*rabbitmq.RPCError, erro
 	return nil, nil
 }
 
-func (s *services) VerifyOTP(req models.VerifyOTPRequest) (*models.AuthResponse, *rabbitmq.RPCError, error) {
+func (s *services) VerifyOTP(req *models.VerifyOTPRequest) (*models.AuthResponse, *rabbitmq.RPCError, error) {
 	otp, err := s.repo.GetOTP(&models.OTPRequest{Email: req.Email, Type: req.Type})
 	if err != nil {
 		return nil, nil, err
