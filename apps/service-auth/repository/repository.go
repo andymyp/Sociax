@@ -10,6 +10,7 @@ import (
 type Repository interface {
 	CreateOTP(emailOTP *models.EmailOTP) error
 	FindOTP(req models.OTPRequest) (*models.EmailOTP, error)
+	UpdateOTP(otp *models.EmailOTP) error
 	CreateAuthProvider(authProvider *models.AuthProvider) error
 	CreateRefreshToken(refreshToken *models.RefreshToken) error
 }
@@ -26,14 +27,14 @@ func (r *repo) CreateOTP(emailOTP *models.EmailOTP) error {
 	return r.db.Clauses(clause.OnConflict{
 		Columns: []clause.Column{{Name: "email"}},
 		DoUpdates: clause.AssignmentColumns([]string{
-			"type", "otp", "expires_at", "created_at",
+			"type", "otp", "used", "expires_at", "created_at",
 		}),
 	}).Create(emailOTP).Error
 }
 
 func (r *repo) FindOTP(req models.OTPRequest) (*models.EmailOTP, error) {
 	var emailOTP models.EmailOTP
-	err := r.db.Where("email = ? AND type = ?", req.Email, req.Type).First(&emailOTP).Error
+	err := r.db.Where("email=? AND type=? AND used=?", req.Email, req.Type, false).First(&emailOTP).Error
 
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
@@ -43,6 +44,10 @@ func (r *repo) FindOTP(req models.OTPRequest) (*models.EmailOTP, error) {
 	}
 
 	return &emailOTP, err
+}
+
+func (r *repo) UpdateOTP(otp *models.EmailOTP) error {
+	return r.db.Save(otp).Error
 }
 
 func (r *repo) CreateAuthProvider(authProvider *models.AuthProvider) error {

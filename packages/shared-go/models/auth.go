@@ -8,13 +8,11 @@ import (
 )
 
 type AuthProvider struct {
-	ID           uuid.UUID `gorm:"type:uuid;primaryKey"`
-	UserID       uuid.UUID `gorm:"type:uuid;not null"`
-	User         User      `gorm:"constraint:OnDelete:CASCADE"`
-	Provider     string    `gorm:"type:varchar(20);not null" validate:"oneof=email google github"`
-	ProviderID   string    `gorm:"not null"`
-	AccessToken  *string   `json:"access_token,omitempty"`
-	RefreshToken *string   `json:"refresh_token,omitempty"`
+	ID         uuid.UUID `gorm:"type:uuid;primaryKey"`
+	UserID     uuid.UUID `gorm:"type:uuid;not null;index"`
+	User       User      `gorm:"constraint:OnDelete:CASCADE" json:"user,omitempty"`
+	Provider   string    `gorm:"type:varchar(20);not null;index" validate:"oneof=email google github"`
+	ProviderID string    `gorm:"not null"`
 
 	CreatedAt time.Time
 	UpdatedAt time.Time
@@ -28,7 +26,7 @@ func (authProvider *AuthProvider) BeforeCreate(tx *gorm.DB) (err error) {
 type RefreshToken struct {
 	ID        uuid.UUID `gorm:"type:uuid;primaryKey"`
 	UserID    uuid.UUID `gorm:"type:uuid;uniqueIndex;not null"`
-	User      User      `gorm:"constraint:OnDelete:CASCADE"`
+	User      User      `gorm:"constraint:OnDelete:CASCADE" json:"user,omitempty"`
 	Token     string    `gorm:"uniqueIndex;not null"`
 	Revoked   bool      `gorm:"default:false"`
 	ExpiresAt time.Time
@@ -47,6 +45,7 @@ type EmailOTP struct {
 	Email     string    `gorm:"uniqueIndex;not null" validate:"required,email"`
 	Type      uint      `gorm:"not null" validate:"required"` // 0: sign-up, 1: forgot-password
 	OTP       string    `gorm:"not null"`
+	Used      bool      `gorm:"default:false"`
 	ExpiresAt time.Time
 	CreatedAt time.Time
 }
@@ -54,12 +53,6 @@ type EmailOTP struct {
 func (emailOTP *EmailOTP) BeforeCreate(tx *gorm.DB) (err error) {
 	emailOTP.ID = uuid.New()
 	return
-}
-
-type SignUpRequest struct {
-	Name     string `json:"name" validate:"required"`
-	Email    string `json:"email" validate:"required,email"`
-	Password string `json:"password" validate:"required,min=6"`
 }
 
 type OTPRequest struct {

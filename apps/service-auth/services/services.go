@@ -14,7 +14,7 @@ import (
 )
 
 type Services interface {
-	SignUp(user models.SignUpRequest) (*rabbitmq.RPCError, error)
+	SignUp(user models.User) (*rabbitmq.RPCError, error)
 	SendEmailOTP(req models.OTPRequest) (*rabbitmq.RPCError, error)
 	VerifyOTP(req models.VerifyOTPRequest) (*models.AuthResponse, *rabbitmq.RPCError, error)
 }
@@ -28,20 +28,43 @@ func NewServices(r repository.Repository, rpc *rabbitmq.RPCClient) Services {
 	return &services{r, rpc}
 }
 
-func (s *services) SignUp(user models.SignUpRequest) (*rabbitmq.RPCError, error) {
+func (s *services) SignUp(req models.User) (*rabbitmq.RPCError, error) {
 	var res *rabbitmq.RPCResponse
 
-	user.Password = utils.Hashed(user.Password)
-	body, _ := json.Marshal(user)
-	pubCreate, err := s.rpc.Publish(context.Background(), "user", "create", body)
+	if req.Password != nil {
+		hashedPass := utils.Hashed(*req.Password)
+		req.Password = &hashedPass
+	}
+
+	body, _ := json.Marshal(req)
+	pub, err := s.rpc.Publish(context.Background(), "user", "create", body)
 	if err != nil {
 		return nil, err
 	}
-	if err := json.Unmarshal(pubCreate, &res); err != nil {
+	if err := json.Unmarshal(pub, &res); err != nil {
 		return nil, err
 	}
 	if res.Error != nil {
 		return res.Error, nil
+	}
+
+	var user models.User
+	dataBytes, err := json.Marshal(res.Data)
+	if err != nil {
+		return nil, err
+	}
+	if err := json.Unmarshal(dataBytes, &user); err != nil {
+		return nil, err
+	}
+
+	provider := &models.AuthProvider{
+		UserID:     user.ID,
+		Provider:   "email",
+		ProviderID: user.Email,
+	}
+
+	if err := s.repo.CreateAuthProvider(provider); err != nil {
+		return nil, err
 	}
 
 	otp := utils.GenerateOTP()
@@ -156,29 +179,34 @@ func (s *services) VerifyOTP(req models.VerifyOTPRequest) (*models.AuthResponse,
 		return nil, err, nil
 	}
 
-	var res *rabbitmq.RPCResponse
-	body, _ := json.Marshal(&models.EmailRequest{Email: req.Email})
-	pub, err := s.rpc.Publish(context.Background(), "user", "find-by-email", body)
-	if err != nil {
-		return nil, nil, err
-	}
-	if err := json.Unmarshal(pub, &res); err != nil {
-		return nil, nil, err
-	}
-	if res.Error != nil {
-		return nil, res.Error, nil
-	}
-
-	var user models.User
-	dataBytes, err := json.Marshal(res.Data)
-	if err != nil {
-		return nil, nil, err
-	}
-	if err := json.Unmarshal(dataBytes, &user); err != nil {
+	record.Used = true
+	if err := s.repo.UpdateOTP(record); err != nil {
 		return nil, nil, err
 	}
 
 	if req.Type == 0 { // sign-up
+		var res *rabbitmq.RPCResponse
+		body, _ := json.Marshal(&models.EmailRequest{Email: req.Email})
+		pub, err := s.rpc.Publish(context.Background(), "user", "find-by-email", body)
+		if err != nil {
+			return nil, nil, err
+		}
+		if err := json.Unmarshal(pub, &res); err != nil {
+			return nil, nil, err
+		}
+		if res.Error != nil {
+			return nil, res.Error, nil
+		}
+
+		var user models.User
+		dataBytes, err := json.Marshal(res.Data)
+		if err != nil {
+			return nil, nil, err
+		}
+		if err := json.Unmarshal(dataBytes, &user); err != nil {
+			return nil, nil, err
+		}
+
 		user.Confirmed = true
 
 		body, _ = json.Marshal(user)
@@ -194,6 +222,7 @@ func (s *services) VerifyOTP(req models.VerifyOTPRequest) (*models.AuthResponse,
 		}
 
 		user.Password = nil
+		user.Providers = nil
 		accessToken, err := GenerateAccessToken(user)
 		if err != nil {
 			return nil, nil, err

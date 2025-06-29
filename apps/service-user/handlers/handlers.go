@@ -13,7 +13,7 @@ import (
 
 type Handlers struct {
 	service services.Services
-	tracer trace.Tracer
+	tracer  trace.Tracer
 }
 
 func NewHandlers(s services.Services, t trace.Tracer) *Handlers {
@@ -34,7 +34,7 @@ func (h *Handlers) Create(body []byte) ([]byte, error) {
 		return rabbitmq.ErrorResponse(err.Error(), 400)
 	}
 
-	rpcErr, err := h.service.Create(&user)
+	res, rpcErr, err := h.service.Create(&user)
 
 	if err != nil {
 		return rabbitmq.ErrorResponse(err.Error(), 500)
@@ -42,10 +42,8 @@ func (h *Handlers) Create(body []byte) ([]byte, error) {
 	if rpcErr != nil {
 		return rabbitmq.ErrorResponse(rpcErr.Message, rpcErr.Code)
 	}
-	
-	return rabbitmq.SuccessResponse(map[string]interface{}{
-		"email": user.Email,
-	})
+
+	return rabbitmq.SuccessResponse(res)
 }
 
 func (h *Handlers) FindByEmail(body []byte) ([]byte, error) {
@@ -62,12 +60,12 @@ func (h *Handlers) FindByEmail(body []byte) ([]byte, error) {
 		return rabbitmq.ErrorResponse(err.Error(), 400)
 	}
 
-	user, err := h.service.FindByEmail(req.Email);
-	
+	user, err := h.service.FindByEmail(req.Email)
+
 	if err != nil {
 		return rabbitmq.ErrorResponse(err.Error(), 500)
 	}
-	
+
 	return rabbitmq.SuccessResponse(user)
 }
 
@@ -89,6 +87,6 @@ func (h *Handlers) Update(body []byte) ([]byte, error) {
 	if err != nil {
 		return rabbitmq.ErrorResponse(err.Error(), 500)
 	}
-	
+
 	return rabbitmq.SuccessResponse(user)
 }
