@@ -10,6 +10,7 @@ const roboto = Roboto({
 import "@/styles/globals.css";
 import type { Metadata } from "next";
 import { ThemeProvider } from "@/components/providers/theme-provider";
+import { ReduxProvider } from "@/components/providers/redux-provider";
 
 export const metadata: Metadata = {
   title: "Sociax",
@@ -40,7 +41,7 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          {children}
+          <ReduxProvider>{children}</ReduxProvider>
         </ThemeProvider>
       </body>
     </html>
