@@ -12,6 +12,7 @@ import type { Metadata } from "next";
 import { ThemeProvider } from "@/components/providers/theme-provider";
 import { ReduxProvider } from "@/components/providers/redux-provider";
 import { QueryProvider } from "@/components/providers/query-provider";
+import { LoadingProvider } from "@/components/providers/loading-provider";
 
 export const metadata: Metadata = {
   title: "Sociax",
@@ -44,7 +45,9 @@ export default function RootLayout({
         >
           <ReduxProvider>
             <QueryProvider>
-              {children}
+              <LoadingProvider>
+                {children}
+              </LoadingProvider>
             </QueryProvider>
           </ReduxProvider>
         </ThemeProvider>
