@@ -51,6 +51,7 @@ func main() {
 	handler := handlers.NewHandlers(rpc)
 
 	routes.AuthRoutes(app, handler)
+	routes.OAuthRoutes(app, handler)
 
 	PORT := utils.GetEnvOrFail("PORT")
 	if err := app.Listen(":" + PORT); err != nil {

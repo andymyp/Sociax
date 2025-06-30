@@ -18,9 +18,32 @@ func NewHandlers(rpc *rabbitmq.RPCClient) *Handlers {
 
 func (h *Handlers) DynamicHandler(service, action string) fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		var res rabbitmq.RPCResponse
+		var body map[string]interface{}
 
-		pub, err := h.rpc.Publish(context.Background(), service, action, c.Body())
+		if len(c.Body()) > 0 {
+			if err := c.BodyParser(&body); err != nil {
+				return c.Status(fiber.StatusBadRequest).JSON(rabbitmq.RPCResponse{
+					Error: &rabbitmq.RPCError{
+						Code:    fiber.StatusBadRequest,
+						Message: err.Error(),
+					},
+				})
+			}
+		}
+
+		if body == nil {
+			body = make(map[string]interface{})
+		}
+
+		for key, val := range c.AllParams() {
+			body[key] = val
+		}
+
+		for key, val := range c.Queries() {
+			body[key] = val
+		}
+
+		mergedData, err := json.Marshal(body)
 		if err != nil {
 			return c.Status(fiber.StatusInternalServerError).JSON(rabbitmq.RPCResponse{
 				Error: &rabbitmq.RPCError{
@@ -29,6 +52,18 @@ func (h *Handlers) DynamicHandler(service, action string) fiber.Handler {
 				},
 			})
 		}
+
+		pub, err := h.rpc.Publish(context.Background(), service, action, mergedData)
+		if err != nil {
+			return c.Status(fiber.StatusInternalServerError).JSON(rabbitmq.RPCResponse{
+				Error: &rabbitmq.RPCError{
+					Code:    fiber.StatusInternalServerError,
+					Message: err.Error(),
+				},
+			})
+		}
+
+		var res rabbitmq.RPCResponse
 
 		if err := json.Unmarshal(pub, &res); err != nil {
 			return c.Status(fiber.StatusInternalServerError).JSON(rabbitmq.RPCResponse{

@@ -4,7 +4,9 @@ import (
 	"Sociax/service-auth/config"
 	"Sociax/shared-go/models"
 	"fmt"
+	"io"
 	"math/rand"
+	"net/http"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
@@ -31,4 +33,14 @@ func ParseToken(tokenStr string) (*jwt.Token, error) {
 
 func GenerateOTP() string {
 	return fmt.Sprintf("%06d", rand.Intn(1000000))
+}
+
+func GetOAuthInfo(client *http.Client, url string) ([]byte, error) {
+	res, err := client.Get(url)
+	if err != nil {
+		return nil, err
+	}
+	defer res.Body.Close()
+
+	return io.ReadAll(res.Body)
 }
