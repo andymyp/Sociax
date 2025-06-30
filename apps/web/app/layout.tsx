@@ -14,6 +14,8 @@ import { ReduxProvider } from "@/components/providers/redux-provider";
 import { QueryProvider } from "@/components/providers/query-provider";
 import { LoadingProvider } from "@/components/providers/loading-provider";
 
+import { Toaster } from "@/components/atoms/sonner";
+
 export const metadata: Metadata = {
   title: "Sociax",
   description: "Social Media App by linkedin.com/in/andymyp",
@@ -47,6 +49,7 @@ export default function RootLayout({
             <QueryProvider>
               <LoadingProvider>
                 {children}
+                <Toaster />
               </LoadingProvider>
             </QueryProvider>
           </ReduxProvider>

@@ -80,7 +80,7 @@ export default function Loading() {
                   ease: "easeInOut",
                 }}
               >
-                SUPER TASKLY
+                Sociax
               </motion.span>
             </motion.div>
             <p className="text-sm text-muted-foreground/80">
