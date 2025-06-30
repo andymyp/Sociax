@@ -1,8 +1,8 @@
 package main
 
 import (
+	"Sociax/service-auth/config"
 	"Sociax/service-auth/handlers"
-	"Sociax/service-auth/helper"
 	"Sociax/service-auth/mailer"
 	"Sociax/service-auth/repository"
 	"Sociax/service-auth/routes"
@@ -18,43 +18,22 @@ import (
 
 func main() {
 	utils.LoadEnv()
+	config.InitAllConfig()
 
-	db := database.InitDatabase(
-		utils.GetEnvOrFail("POSTGRES_HOST"),
-		utils.GetEnvOrFail("POSTGRES_USER"),
-		utils.GetEnvOrFail("POSTGRES_PASS"),
-		utils.GetEnvOrFail("POSTGRES_DB"),
-		utils.GetEnvOrFail("POSTGRES_PORT"),
-	)
+	db := database.InitDatabase(config.DatabaseConfig)
 
-	mailer.InitMailer(
-		utils.GetEnvOrFail("SMTP_HOST"),
-		utils.GetEnvOrFail("SMTP_PORT"),
-		utils.GetEnvOrFail("SMTP_USER"),
-		utils.GetEnvOrFail("SMTP_PASS"),
-		utils.GetEnvOrFail("SMTP_EMAIL"),
-	)
+	mailer.InitMailer(config.MailerConfig)
 
-	cleanupTracer := oteltracer.InitTracer(
-		utils.GetEnvOrFail("TRACER_ENDPOINT"),
-		utils.GetEnvOrFail("SERVICE_NAME"),
-	)
+	cleanupTracer := oteltracer.InitTracer(config.TracerConfig)
 	defer cleanupTracer()
 
-	tracer := otel.Tracer(utils.GetEnvOrFail("SERVICE_NAME"))
+	tracer := otel.Tracer(config.ServiceName)
 
-	rpc, err := rabbitmq.NewClient(rabbitmq.Config{
-		User:      utils.GetEnvOrFail("RABBITMQ_USER"),
-		Password:  utils.GetEnvOrFail("RABBITMQ_PASS"),
-		Host:      utils.GetEnvOrFail("RABBITMQ_HOST"),
-		QueueName: utils.GetEnvOrFail("RABBITMQ_QUEUE"),
-	})
+	rpc, err := rabbitmq.NewClient(config.RabbitMQConfig)
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer rpc.Close()
-
-	helper.InitJWT(utils.GetEnvOrFail("JWT_SECRET"))
 
 	repo := repository.NewRepository(db)
 	service := services.NewServices(repo)

@@ -11,12 +11,17 @@ import (
 	semconv "go.opentelemetry.io/otel/semconv/v1.34.0"
 )
 
-func InitTracer(endpoint string, service string) func() {
+type Config struct {
+	Endpoint string
+	Service  string
+}
+
+func InitTracer(cfg Config) func() {
 	ctx := context.Background()
 
 	exporter, err := otlptracegrpc.New(ctx,
 		otlptracegrpc.WithInsecure(),
-		otlptracegrpc.WithEndpoint(endpoint),
+		otlptracegrpc.WithEndpoint(cfg.Endpoint),
 	)
 	if err != nil {
 		log.Fatal(err)
@@ -26,7 +31,7 @@ func InitTracer(endpoint string, service string) func() {
 		trace.WithBatcher(exporter),
 		trace.WithResource(resource.NewWithAttributes(
 			semconv.SchemaURL,
-			semconv.ServiceNameKey.String(service),
+			semconv.ServiceNameKey.String(cfg.Service),
 		)),
 	)
 	otel.SetTracerProvider(tp)

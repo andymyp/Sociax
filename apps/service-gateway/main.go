@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 
+	"Sociax/service-gateway/config"
 	"Sociax/service-gateway/handlers"
 	"Sociax/service-gateway/routes"
 	"Sociax/shared-go/otelmetrics"
@@ -20,19 +21,12 @@ import (
 
 func main() {
 	utils.LoadEnv()
+	config.InitAllConfig()
 
-	cleanupMatrics := otelmetrics.InitMetrics(
-		utils.GetEnvOrFail("METRICS_ENDPOINT"),
-		utils.GetEnvOrFail("SERVICE_NAME"),
-	)
+	cleanupMatrics := otelmetrics.InitMetrics(config.MetricsConfig)
 	defer cleanupMatrics()
 
-	rpc, err := rabbitmq.NewClient(rabbitmq.Config{
-		User:      utils.GetEnvOrFail("RABBITMQ_USER"),
-		Password:  utils.GetEnvOrFail("RABBITMQ_PASS"),
-		Host:      utils.GetEnvOrFail("RABBITMQ_HOST"),
-		QueueName: utils.GetEnvOrFail("RABBITMQ_QUEUE"),
-	})
+	rpc, err := rabbitmq.NewClient(config.RabbitMQConfig)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -46,12 +40,7 @@ func main() {
 	app.Use(cors.New())
 	app.Use(helmet.New())
 	app.Use(limiter.New())
-
-	app.Use(logger.New(logger.Config{
-		Format:     "[${time}] ${status} - ${method} ${path} ${latency}\n",
-		TimeFormat: "2006/01/02 15:04:05",
-		TimeZone:   "Asia/Jakarta",
-	}))
+	app.Use(logger.New(config.LoggerConfig))
 
 	app.Use(otelfiber.Middleware())
 

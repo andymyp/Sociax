@@ -1,6 +1,7 @@
 package helper
 
 import (
+	"Sociax/service-auth/config"
 	"Sociax/shared-go/models"
 	"fmt"
 	"math/rand"
@@ -8,12 +9,6 @@ import (
 
 	"github.com/golang-jwt/jwt/v5"
 )
-
-var jwtSecret []byte
-
-func InitJWT(secret string) {
-	jwtSecret = []byte(secret)
-}
 
 func GenerateAccessToken(user *models.User) (string, error) {
 	claims := models.JwtClaims{
@@ -25,12 +20,12 @@ func GenerateAccessToken(user *models.User) (string, error) {
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	return token.SignedString(jwtSecret)
+	return token.SignedString(config.JwtSecret)
 }
 
 func ParseToken(tokenStr string) (*jwt.Token, error) {
 	return jwt.Parse(tokenStr, func(token *jwt.Token) (interface{}, error) {
-		return jwtSecret, nil
+		return config.JwtSecret, nil
 	})
 }
 
