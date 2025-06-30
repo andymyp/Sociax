@@ -1,10 +1,15 @@
 package models
 
 type OAuthRequest struct {
+	DeviceID string `json:"device_id" validate:"required"`
+	Device   string `json:"device" validate:"required,oneof=web android ios"`
 	Provider string `json:"provider" validate:"required"`
 }
 
 type OAuthCallbackRequest struct {
+	State    string `json:"state" validate:"required"`
+	DeviceID string `json:"device_id" validate:"required"`
+	Device   string `json:"device" validate:"required,oneof=web android ios"`
 	Provider string `json:"provider" validate:"required"`
 	Code     string `json:"code" validate:"required"`
 }

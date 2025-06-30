@@ -103,6 +103,8 @@ func (s *services) ResetPassword(req *models.ResetPasswordRequest) (*models.Auth
 	refreshToken := utils.Hashed(uuid.NewString())
 
 	rt := &models.RefreshToken{
+		DeviceID:  req.DeviceID,
+		Device:    req.Device,
 		UserID:    user.ID,
 		Token:     refreshToken,
 		ExpiresAt: time.Now().Add(7 * 24 * time.Hour),
@@ -129,7 +131,7 @@ func (s *services) SignIn(req *models.SignInRequest) (*models.AuthResponse, *rab
 		err := &rabbitmq.RPCError{Message: "Invalid email or password", Code: 401}
 		return nil, err, nil
 	}
-	if !user.Confirmed {
+	if !user.Confirmed || user.Password == nil {
 		err := &rabbitmq.RPCError{Message: "Invalid email or password", Code: 401}
 		return nil, err, nil
 	}
@@ -148,6 +150,8 @@ func (s *services) SignIn(req *models.SignInRequest) (*models.AuthResponse, *rab
 	refreshToken := utils.Hashed(uuid.NewString())
 
 	rt := &models.RefreshToken{
+		DeviceID:  req.DeviceID,
+		Device:    req.Device,
 		UserID:    user.ID,
 		Token:     refreshToken,
 		ExpiresAt: time.Now().Add(7 * 24 * time.Hour),

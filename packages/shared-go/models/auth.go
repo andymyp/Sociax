@@ -26,7 +26,9 @@ func (authProvider *AuthProvider) BeforeCreate(tx *gorm.DB) (err error) {
 
 type RefreshToken struct {
 	ID        uuid.UUID `gorm:"type:uuid;primaryKey" json:"id"`
-	UserID    uuid.UUID `gorm:"type:uuid;uniqueIndex;not null" json:"user_id"`
+	UserID    uuid.UUID `gorm:"type:uuid;not null;index:uid_device,unique" json:"user_id"`
+	DeviceID  string    `gorm:"type:varchar(50);not null;index:uid_device,unique" json:"device_id"`
+	Device    string    `gorm:"type:varchar(10);not null" json:"device"` // web, android, ios
 	Token     string    `gorm:"uniqueIndex;not null" json:"token"`
 	Revoked   bool      `gorm:"default:false" json:"revoked"`
 	ExpiresAt time.Time `json:"expires_at"`
@@ -71,9 +73,11 @@ type OTPRequest struct {
 }
 
 type VerifyOTPRequest struct {
-	Email string `json:"email" validate:"required,email"`
-	Type  uint   `json:"type" validate:"oneof=0 1"`
-	OTP   string `json:"otp" validate:"required,min=6"`
+	DeviceID string `json:"device_id" validate:"required"`
+	Device   string `json:"device" validate:"required,oneof=web android ios"`
+	Email    string `json:"email" validate:"required,email"`
+	Type     uint   `json:"type" validate:"oneof=0 1"`
+	OTP      string `json:"otp" validate:"required,min=6"`
 }
 
 type AuthResponse struct {
@@ -82,12 +86,16 @@ type AuthResponse struct {
 }
 
 type ResetPasswordRequest struct {
+	DeviceID        string `json:"device_id" validate:"required"`
+	Device          string `json:"device" validate:"required,oneof=web android ios"`
 	Email           string `json:"email" validate:"required,email"`
 	Password        string `json:"password" validate:"required,min=6"`
 	ConfirmPassword string `json:"confirm_password" validate:"required,eqfield=Password"`
 }
 
 type SignInRequest struct {
+	DeviceID string `json:"device_id" validate:"required"`
+	Device   string `json:"device" validate:"required,oneof=web android ios"`
 	Email    string `json:"email" validate:"required,email"`
 	Password string `json:"password" validate:"required"`
 }

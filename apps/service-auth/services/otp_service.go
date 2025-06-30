@@ -109,6 +109,8 @@ func (s *services) VerifyOTP(req *models.VerifyOTPRequest) (*models.AuthResponse
 		refreshToken := utils.Hashed(uuid.NewString())
 
 		rt := &models.RefreshToken{
+			DeviceID:  req.DeviceID,
+			Device:    req.Device,
 			UserID:    user.ID,
 			Token:     refreshToken,
 			ExpiresAt: time.Now().Add(7 * 24 * time.Hour),

@@ -6,6 +6,7 @@ import (
 	"Sociax/shared-go/utils"
 	"context"
 	"encoding/json"
+	"net/url"
 )
 
 func (h *Handlers) SignInOAuth(body []byte) ([]byte, error) {
@@ -39,6 +40,19 @@ func (h *Handlers) SignInOAuthCallback(body []byte) ([]byte, error) {
 		return rabbitmq.ErrorResponse("Request is invalid", 400)
 	}
 
+	stateDecoded, err := url.QueryUnescape(req.State)
+	if err != nil {
+		return rabbitmq.ErrorResponse(err.Error(), 500)
+	}
+
+	values, err := url.ParseQuery(stateDecoded)
+	if err != nil {
+		return rabbitmq.ErrorResponse(err.Error(), 500)
+	}
+
+	req.DeviceID = values.Get("device_id")
+	req.Device = values.Get("device")
+
 	if err := utils.StructValidate(req); err != nil {
 		return rabbitmq.ErrorResponse(err.Error(), 400)
 	}
@@ -46,7 +60,7 @@ func (h *Handlers) SignInOAuthCallback(body []byte) ([]byte, error) {
 	var authRes *models.AuthResponse
 
 	if req.Provider == "google" {
-		res, err := h.service.SignInGoogleCallback(req.Code)
+		res, err := h.service.SignInGoogleCallback(req)
 		if err != nil {
 			return rabbitmq.ErrorResponse(err.Error(), 500)
 		}
@@ -55,7 +69,7 @@ func (h *Handlers) SignInOAuthCallback(body []byte) ([]byte, error) {
 	}
 
 	if req.Provider == "github" {
-		res, err := h.service.SignInGithubCallback(req.Code)
+		res, err := h.service.SignInGithubCallback(req)
 		if err != nil {
 			return rabbitmq.ErrorResponse(err.Error(), 500)
 		}

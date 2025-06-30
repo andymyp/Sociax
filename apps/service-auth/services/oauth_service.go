@@ -7,6 +7,8 @@ import (
 	"Sociax/shared-go/utils"
 	"context"
 	"encoding/json"
+	"fmt"
+	"net/url"
 	"strconv"
 	"time"
 
@@ -15,21 +17,23 @@ import (
 )
 
 func (s *services) SignInOAuth(req *models.OAuthRequest) string {
-	var url string
+	var authUrl string
+
+	state := url.QueryEscape(fmt.Sprintf("device_id=%s&device=%s", req.DeviceID, req.Device))
 
 	if req.Provider == "google" {
-		url = config.GoogleOAuthConfig.AuthCodeURL("state-random", oauth2.AccessTypeOffline)
+		authUrl = config.GoogleOAuthConfig.AuthCodeURL(state, oauth2.AccessTypeOffline)
 	}
 
 	if req.Provider == "github" {
-		url = config.GitHubOAuthConfig.AuthCodeURL("state-random", oauth2.AccessTypeOffline)
+		authUrl = config.GitHubOAuthConfig.AuthCodeURL(state, oauth2.AccessTypeOffline)
 	}
 
-	return url
+	return authUrl
 }
 
-func (s *services) SignInGoogleCallback(code string) (*models.AuthResponse, error) {
-	token, err := config.GoogleOAuthConfig.Exchange(context.Background(), code)
+func (s *services) SignInGoogleCallback(req *models.OAuthCallbackRequest) (*models.AuthResponse, error) {
+	token, err := config.GoogleOAuthConfig.Exchange(context.Background(), req.Code)
 	if err != nil {
 		return nil, err
 	}
@@ -78,6 +82,8 @@ func (s *services) SignInGoogleCallback(code string) (*models.AuthResponse, erro
 	refreshToken := utils.Hashed(uuid.NewString())
 
 	rt := &models.RefreshToken{
+		DeviceID:  req.DeviceID,
+		Device:    req.Device,
 		UserID:    user.ID,
 		Token:     refreshToken,
 		ExpiresAt: time.Now().Add(7 * 24 * time.Hour),
@@ -95,8 +101,8 @@ func (s *services) SignInGoogleCallback(code string) (*models.AuthResponse, erro
 	return authResponse, nil
 }
 
-func (s *services) SignInGithubCallback(code string) (*models.AuthResponse, error) {
-	token, err := config.GitHubOAuthConfig.Exchange(context.Background(), code)
+func (s *services) SignInGithubCallback(req *models.OAuthCallbackRequest) (*models.AuthResponse, error) {
+	token, err := config.GitHubOAuthConfig.Exchange(context.Background(), req.Code)
 	if err != nil {
 		return nil, err
 	}
@@ -166,6 +172,8 @@ func (s *services) SignInGithubCallback(code string) (*models.AuthResponse, erro
 	refreshToken := utils.Hashed(uuid.NewString())
 
 	rt := &models.RefreshToken{
+		DeviceID:  req.DeviceID,
+		Device:    req.Device,
 		UserID:    user.ID,
 		Token:     refreshToken,
 		ExpiresAt: time.Now().Add(7 * 24 * time.Hour),

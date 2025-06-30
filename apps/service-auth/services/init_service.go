@@ -13,8 +13,8 @@ type Services interface {
 	ResetPassword(req *models.ResetPasswordRequest) (*models.AuthResponse, *rabbitmq.RPCError, error)
 	SignIn(req *models.SignInRequest) (*models.AuthResponse, *rabbitmq.RPCError, error)
 	SignInOAuth(req *models.OAuthRequest) string
-	SignInGoogleCallback(code string) (*models.AuthResponse, error)
-	SignInGithubCallback(code string) (*models.AuthResponse, error)
+	SignInGoogleCallback(req *models.OAuthCallbackRequest) (*models.AuthResponse, error)
+	SignInGithubCallback(req *models.OAuthCallbackRequest) (*models.AuthResponse, error)
 }
 
 type services struct {

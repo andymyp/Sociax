@@ -95,7 +95,7 @@ func (r *repo) CreateAuthProvider(provider *models.AuthProvider) error {
 
 func (r *repo) CreateRefreshToken(refreshToken *models.RefreshToken) error {
 	return r.db.Clauses(clause.OnConflict{
-		Columns: []clause.Column{{Name: "user_id"}},
+		Columns: []clause.Column{{Name: "user_id"}, {Name: "device_id"}},
 		DoUpdates: clause.AssignmentColumns([]string{
 			"token", "revoked", "expires_at", "created_at",
 		}),
