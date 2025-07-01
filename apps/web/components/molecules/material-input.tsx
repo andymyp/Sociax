@@ -62,7 +62,7 @@ const MaterialInput = React.forwardRef<HTMLInputElement, Props>(
           )}
         >
           {label}
-          {required && <span className="text-destructive ml-1">*</span>}
+          {required && <span className="text-destructive -ml-1">*</span>}
         </FormLabel>
         {withErrorMessege && (<FormMessage className="text-xs" />)}
       </FormItem>
