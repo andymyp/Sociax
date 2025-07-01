@@ -14,7 +14,7 @@ interface Props {
 export const GridCard = ({ label, title, subTitle, description }: Props) => {
   return (
     <div className="relative flex flex-col w-full min-h-screen p-8">
-      <div className="absolute flex justify-center gap-2 md:justify-start">
+      <div className="absolute flex gap-2">
         <Link href="/" className="flex items-center gap-2 font-medium text-primary text-2xl">
           <div className="flex size-8 items-center justify-center">
             <Image

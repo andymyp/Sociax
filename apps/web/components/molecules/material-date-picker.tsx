@@ -67,11 +67,11 @@ const MaterialDatePicker = React.forwardRef<HTMLButtonElement, Props>(
           <FormControl>
             <PopoverTrigger asChild>
               <Button
-                size="lg"
+                size="xl"
                 ref={ref}
                 variant="outline"
                 className={cn(
-                  "w-full justify-between text-left font-normal !px-[11px]",
+                  "w-full justify-between text-left font-normal !px-3.5",
                   !selected && "justify-end text-muted-foreground",
                   focused &&
                     open &&
@@ -104,10 +104,10 @@ const MaterialDatePicker = React.forwardRef<HTMLButtonElement, Props>(
         </Popover>
         <FormLabel
           className={cn(
-            "absolute -top-0 left-3 pointer-events-none text-muted-foreground",
+            "absolute top-1 left-[15px] pointer-events-none text-muted-foreground",
             "transition-all duration-200",
             focused || filled
-              ? "-translate-y-2 -translate-x-1 text-xs"
+              ? "-translate-y-3 -translate-x-1 text-xs"
               : "translate-y-[13px]",
             (focused || filled) && "px-1 bg-background",
             focused && open && "text-primary",

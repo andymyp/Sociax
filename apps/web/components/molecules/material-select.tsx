@@ -56,8 +56,9 @@ const MaterialSelect = React.forwardRef<HTMLButtonElement, Props>(
             <SelectTrigger
               ref={ref}
               className={cn(
-                "w-full !h-10",
-                focused && "border-primary focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[1px]",
+                "w-full !h-12 !px-3.5",
+                focused &&
+                  "border-primary focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[1px]",
                 fieldState?.error &&
                   "border-destructive focus-visible:outline-none focus-visible:ring-0",
                 className
@@ -74,7 +75,11 @@ const MaterialSelect = React.forwardRef<HTMLButtonElement, Props>(
               const fallbackColor = fallbackAvatarColor(option.label!);
 
               return (
-                <SelectItem key={option.value} value={option.value} className="w-full">
+                <SelectItem
+                  key={option.value}
+                  value={option.value}
+                  className="w-full"
+                >
                   {withImage && (
                     <Avatar className="size-6 flex items-center justify-center">
                       <AvatarImage
@@ -100,10 +105,10 @@ const MaterialSelect = React.forwardRef<HTMLButtonElement, Props>(
         </Select>
         <FormLabel
           className={cn(
-            "absolute -top-0 left-3 pointer-events-none text-muted-foreground",
+            "absolute top-1 left-[15px] pointer-events-none text-muted-foreground",
             "transition-all duration-200",
             focused || filled
-              ? "-translate-y-2 -translate-x-1 text-xs"
+              ? "-translate-y-3 -translate-x-1 text-xs"
               : "translate-y-[13px]",
             (focused || filled) && "px-1 bg-background",
             focused && "text-primary",

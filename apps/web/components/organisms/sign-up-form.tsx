@@ -45,7 +45,7 @@ export const SignUpForm = () => {
 
   const form = useForm<FormValues>({
     resolver: zodResolver(SignUpSchema),
-    defaultValues: { name: "", email: "", password: "", confirm_password: "" },
+    defaultValues: { name: "", gender: undefined, email: "", password: "", confirm_password: "" },
   });
 
   const onSubmit: SubmitHandler<FormValues> = async (data) => {
@@ -62,7 +62,7 @@ export const SignUpForm = () => {
         className="flex flex-col w-full gap-4 overflow-x-hidden"
         onSubmit={form.handleSubmit(onSubmit, onError)}
       >
-        <div className="relative w-full min-h-[165px] overflow-hidden">
+        <div className="relative w-full min-h-[190px] overflow-hidden">
           <AnimatePresence mode="wait" custom={direction}>
             {step === 0 && (
               <motion.div
@@ -111,6 +111,7 @@ export const SignUpForm = () => {
                       label="Gender"
                       disabled={form.formState.isSubmitting}
                       fieldState={fieldState}
+                      onValueChange={field.onChange}
                       options={[
                         {
                           label: "Male",

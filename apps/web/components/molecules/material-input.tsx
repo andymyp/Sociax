@@ -51,10 +51,10 @@ const MaterialInput = React.forwardRef<HTMLInputElement, Props>(
         </FormControl>
         <FormLabel
           className={cn(
-            "absolute -top-0 left-3 pointer-events-none text-muted-foreground",
+            "absolute top-1 left-4 pointer-events-none text-muted-foreground",
             "transition-all duration-200",
             focused || filled
-              ? "-translate-y-2 -translate-x-1 text-xs"
+              ? "-translate-y-3 -translate-x-1 text-xs"
               : "translate-y-[13px]",
             (focused || filled) && "px-1 bg-background",
             focused && "text-primary",
