@@ -43,7 +43,7 @@ function Input({
         <button
           type="button"
           onClick={handleTogglePassword}
-          className="absolute right-3 text-muted-foreground hover:text-foreground cursor-pointer"
+          className="absolute right-[14px] text-muted-foreground hover:text-foreground cursor-pointer"
           tabIndex={-1}
         >
           {showPassword ? (

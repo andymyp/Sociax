@@ -23,3 +23,7 @@ export const SignUpSchema = z
       });
     }
   });
+
+export const VerifyOtpSchema = z.object({
+  otp: z.string().min(6, "OTP must be at least 6 number"),
+});
