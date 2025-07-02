@@ -8,17 +8,28 @@ import { Form, FormControl, FormField, FormItem } from "../molecules/form";
 import { FormButtons } from "../molecules/form-buttons";
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "../molecules/input-otp";
 import { REGEXP_ONLY_DIGITS } from "input-otp";
+import { useVerifyOtp } from "@/hooks/auth/use-verify-otp";
+import { v4 as uuidv4 } from "uuid";
 
 type FormValues = z.infer<typeof VerifyOtpSchema>;
 
-export const VerifyOtpForm = () => {
+interface Props {
+  type: number;
+  email: string;
+}
+
+export const VerifyOtpForm = ({ type, email }: Props) => {
   const form = useForm<FormValues>({
     resolver: zodResolver(VerifyOtpSchema),
     defaultValues: { otp: "" },
   });
 
+  const { mutateAsync } = useVerifyOtp();
+
   const onSubmit: SubmitHandler<FormValues> = async (data) => {
-    console.log(data);
+    await mutateAsync({
+      body: { device_id: uuidv4(), device: "web", type, email, ...data },
+    });
   };
 
   const onError: SubmitErrorHandler<FormValues> = async (errors) => {
@@ -37,11 +48,7 @@ export const VerifyOtpForm = () => {
           render={({ field }) => (
             <FormItem>
               <FormControl>
-                <InputOTP
-                  maxLength={6}
-                  pattern={REGEXP_ONLY_DIGITS}
-                  {...field}
-                >
+                <InputOTP maxLength={6} pattern={REGEXP_ONLY_DIGITS} {...field}>
                   <InputOTPGroup>
                     <InputOTPSlot index={0} />
                     <InputOTPSlot index={1} />

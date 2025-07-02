@@ -1,17 +1,24 @@
-import { IEmailResponse, IUser } from "@/lib/types/auth-type";
+import { IEmailResponse, IResendOtp, IUser } from "@/lib/types/auth-type";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 interface IinitialState {
-  verify: IEmailResponse | null
-  token: string | null
-  user: IUser | null
+  verify: IEmailResponse | null;
+  resendOtp: IResendOtp;
+  token: string | null;
+  user: IUser | null;
 }
 
 const initialState: IinitialState = {
   verify: null,
+  resendOtp: {
+    attempts: 0,
+    nextResendAt: null,
+  },
   token: null,
   user: null,
 };
+
+const delayOtpSteps = [60, 120, 120, 3600];
 
 const authSlice = createSlice({
   name: "auth",
@@ -20,6 +27,15 @@ const authSlice = createSlice({
     resetState: () => initialState,
     setVerify: (state, action: PayloadAction<IinitialState["verify"]>) => {
       state.verify = action.payload;
+    },
+    startOtpCooldown: (state) => {
+      if (state.resendOtp.attempts >= delayOtpSteps.length) return;
+      const delay = delayOtpSteps[state.resendOtp.attempts] * 1000;
+      state.resendOtp.nextResendAt = Date.now() + delay;
+      state.resendOtp.attempts += 1;
+    },
+    resetResendOtp: (state) => {
+      state.resendOtp = initialState.resendOtp;
     },
     setToken: (state, action: PayloadAction<IinitialState["token"]>) => {
       state.token = action.payload;
