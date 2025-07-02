@@ -27,7 +27,7 @@ export const useSignUp = () => {
     },
     onSuccess: ({ data }) => {
       dispatch(AuthAction.setVerify(data));
-      toast.success("Success. OTP send to " + data.email);
+      toast.success("OTP send to " + data.email);
       return router.push("/auth/verify-otp");
     },
     onError: (err) => toast.error(err.response?.data.error.message),

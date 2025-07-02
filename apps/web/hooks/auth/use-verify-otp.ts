@@ -37,9 +37,6 @@ export const useVerifyOtp = () => {
 
         toast.success("Welcome " + user.name);
         router.replace("/");
-
-        dispatch(AuthAction.resetResendOtp());
-        dispatch(AuthAction.setVerify(null));
       }
     },
     onError: (err) => toast.error(err.response?.data.error.message),

@@ -9,7 +9,9 @@ import { FormButtons } from "../molecules/form-buttons";
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "../molecules/input-otp";
 import { REGEXP_ONLY_DIGITS } from "input-otp";
 import { useVerifyOtp } from "@/hooks/auth/use-verify-otp";
-import { v4 as uuidv4 } from "uuid";
+import { useSelector } from "react-redux";
+import { AppState } from "@/lib/store";
+import { toast } from "sonner";
 
 type FormValues = z.infer<typeof VerifyOtpSchema>;
 
@@ -19,6 +21,10 @@ interface Props {
 }
 
 export const VerifyOtpForm = ({ type, email }: Props) => {
+  const { device_id, device } = useSelector(
+    (state: AppState) => state.auth.deviceInfo
+  );
+
   const form = useForm<FormValues>({
     resolver: zodResolver(VerifyOtpSchema),
     defaultValues: { otp: "" },
@@ -28,12 +34,12 @@ export const VerifyOtpForm = ({ type, email }: Props) => {
 
   const onSubmit: SubmitHandler<FormValues> = async (data) => {
     await mutateAsync({
-      body: { device_id: uuidv4(), device: "web", type, email, ...data },
+      body: { device_id, device, type, email, ...data },
     });
   };
 
   const onError: SubmitErrorHandler<FormValues> = async (errors) => {
-    console.log(errors);
+    toast.error(Object.values(errors)[0]?.message);
   };
 
   return (

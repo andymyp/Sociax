@@ -45,12 +45,17 @@ export default function VerifyOtpPage() {
           Math.floor((nextResendAt - Date.now()) / 1000)
         );
         setRemaining(diff);
+
+        if (diff <= 0 && attempts >= 4) {
+          dispatch(AuthAction.resetResendOtp());
+        }
       } else {
         setRemaining(0);
       }
     }, 1000);
+
     return () => clearInterval(interval);
-  }, [nextResendAt]);
+  }, [nextResendAt, attempts, dispatch]);
 
   const formatSeconds = (seconds: number) => {
     if (seconds >= 3600) return `${Math.floor(seconds / 60 / 60)}h`;
@@ -65,7 +70,7 @@ export default function VerifyOtpPage() {
     await mutateAsync({ body: { type: verify!.type, email: verify!.email } });
   };
 
-  // const disabledResedOtp = remaining > 0 || attempts >= 4;
+  const disabledResedOtp = remaining > 0 || attempts >= 4;
 
   if (!verify) return <Loading />;
 
@@ -103,6 +108,7 @@ export default function VerifyOtpPage() {
           size="sm"
           className="w-fit text-muted-foreground"
           onClick={handleResendOtp}
+          disabled={disabledResedOtp}
         >
           {remaining > 0
             ? `Resend in ${formatSeconds(remaining)}`

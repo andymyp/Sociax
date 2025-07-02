@@ -1,7 +1,14 @@
-import { IEmailResponse, IResendOtp, IUser } from "@/lib/types/auth-type";
+import {
+  IDeviceInfo,
+  IEmailResponse,
+  IResendOtp,
+  IUser,
+} from "@/lib/types/auth-type";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { v4 as uuidv4 } from "uuid";
 
 interface IinitialState {
+  deviceInfo: IDeviceInfo;
   verify: IEmailResponse | null;
   resendOtp: IResendOtp;
   token: string | null;
@@ -9,6 +16,10 @@ interface IinitialState {
 }
 
 const initialState: IinitialState = {
+  deviceInfo: {
+    device_id: uuidv4(),
+    device: "web",
+  },
   verify: null,
   resendOtp: {
     attempts: 0,

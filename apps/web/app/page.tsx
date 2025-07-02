@@ -1,8 +1,23 @@
+"use client";
+
 import { Button } from "@/components/atoms/button";
 import { ModeToggle } from "@/components/molecules/mode-toggle";
+import { AppDispatch, AppState } from "@/lib/store";
+import { AuthAction } from "@/lib/store/slices/auth-slice";
 import Image from "next/image";
+import React from "react";
+import { useDispatch, useSelector } from "react-redux";
 
 export default function Home() {
+  const dispatch = useDispatch<AppDispatch>();
+  const verify = useSelector((state: AppState) => state.auth.verify);
+
+  React.useEffect(() => {
+    if (verify) {
+      dispatch(AuthAction.setVerify(null));
+    }
+  }, [dispatch, verify]);
+
   return (
     <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
       <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">

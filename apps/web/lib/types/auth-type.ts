@@ -1,3 +1,8 @@
+export interface IDeviceInfo {
+  device_id: string;
+  device: string;
+}
+
 export interface IUser {
   id: string;
   name: string;
