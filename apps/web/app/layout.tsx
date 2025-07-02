@@ -49,7 +49,13 @@ export default function RootLayout({
             <QueryProvider>
               <LoadingProvider>
                 {children}
-                <Toaster />
+                <Toaster 
+                  position="top-right" 
+                  duration={6000} 
+                  richColors 
+                  expand 
+                  closeButton 
+                />
               </LoadingProvider>
             </QueryProvider>
           </ReduxProvider>

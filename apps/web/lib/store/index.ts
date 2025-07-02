@@ -5,6 +5,7 @@ import { persistReducer, persistStore } from "redux-persist";
 import createWebStorage from "redux-persist/lib/storage/createWebStorage";
 
 import appReducer from "./slices/app-slice";
+import authReducer from "./slices/auth-slice";
 
 const createNoopStorage = () => ({
   getItem: (_key: string) => Promise.resolve(null),
@@ -24,6 +25,7 @@ const persistConfig = {
 
 const reducers = combineReducers({
   app: appReducer,
+  auth: authReducer,
 });
 
 const rootReducer = (state: any, action: any) => {

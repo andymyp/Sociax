@@ -1,6 +1,6 @@
 "use client";
 
-import { persistor, store } from "@/store";
+import { persistor, store } from "@/lib/store";
 import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
 

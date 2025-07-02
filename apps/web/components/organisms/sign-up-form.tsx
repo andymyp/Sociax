@@ -14,6 +14,8 @@ import { AnimatePresence, motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { MaterialDatePicker } from "../molecules/material-date-picker";
 import { MaterialSelect } from "../molecules/material-select";
+import { useSignUp } from "@/hooks/auth/use-sign-in";
+import { toast } from "sonner";
 
 const variants = {
   enter: (direction: "left" | "right") => ({
@@ -48,12 +50,14 @@ export const SignUpForm = () => {
     defaultValues: { name: "", gender: undefined, email: "", password: "", confirm_password: "" },
   });
 
+  const { mutateAsync } = useSignUp();
+
   const onSubmit: SubmitHandler<FormValues> = async (data) => {
-    console.log(data);
+    await mutateAsync({ body: data });
   };
 
   const onError: SubmitErrorHandler<FormValues> = async (errors) => {
-    console.log(errors);
+    toast.error(Object.values(errors)[0]?.message);
   };
 
   return (
