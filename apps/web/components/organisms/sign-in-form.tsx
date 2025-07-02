@@ -62,7 +62,7 @@ export const SignInForm = () => {
           )}
         />
         <div className="flex w-full justify-end mb-2">
-          <Link href="/forgot-password" className="text-sm p-0 hover:underline">
+          <Link href="/auth/forgot-password" className="text-sm p-0 hover:underline">
             Forgot password?
           </Link>
         </div>

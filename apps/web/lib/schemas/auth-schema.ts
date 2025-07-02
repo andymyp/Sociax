@@ -38,3 +38,7 @@ export const ResetPasswordSchema = z.object({
     });
   }
 });
+
+export const ForgotPasswordSchema = z.object({
+  email: z.string().email("Invalid email address"),
+});

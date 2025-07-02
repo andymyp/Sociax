@@ -21,7 +21,7 @@ export default function SignInPage() {
           description="Please sign in to your account by completing the necessary fields and start the adventure"
         />
       </div>
-      <div className="relative flex items-center justify-center p-8 md:px-20">
+      <div className="relative flex items-center justify-center p-8 md:px-20 bg-background">
         <div className="absolute top-8 left-8 flex md:hidden gap-2">
           <Link
             href="/"

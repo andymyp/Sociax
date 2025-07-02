@@ -1,20 +1,20 @@
 "use client";
 
 import { z } from "zod";
-import { LockOpen } from "lucide-react";
+import { Mail } from "lucide-react";
 import { SubmitErrorHandler, SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ResetPasswordSchema } from "@/lib/schemas/auth-schema";
+import { ForgotPasswordSchema } from "@/lib/schemas/auth-schema";
 import { Form, FormField } from "../molecules/form";
 import { MaterialInput } from "../molecules/material-input";
 import { FormButtons } from "../molecules/form-buttons";
 
-type FormValues = z.infer<typeof ResetPasswordSchema>;
+type FormValues = z.infer<typeof ForgotPasswordSchema>;
 
-export const ResetPasswordForm = () => {
+export const ForgotPasswordForm = () => {
   const form = useForm<FormValues>({
-    resolver: zodResolver(ResetPasswordSchema),
-    defaultValues: { password: "", confirm_password: "" },
+    resolver: zodResolver(ForgotPasswordSchema),
+    defaultValues: { email: "" },
   });
 
   const onSubmit: SubmitHandler<FormValues> = async (data) => {
@@ -33,38 +33,21 @@ export const ResetPasswordForm = () => {
       >
         <FormField
           control={form.control}
-          name="password"
+          name="email"
           render={({ field, fieldState }) => (
             <MaterialInput
-              label="Password"
-              type="password"
-              icon={LockOpen}
+              label="Email"
+              type="text"
+              icon={Mail}
               disabled={form.formState.isSubmitting}
               fieldState={fieldState}
               {...field}
               required
-              toggleablePassword
-            />
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="confirm_password"
-          render={({ field, fieldState }) => (
-            <MaterialInput
-              label="Confirm Password"
-              type="password"
-              icon={LockOpen}
-              disabled={form.formState.isSubmitting}
-              fieldState={fieldState}
-              {...field}
-              required
-              toggleablePassword
             />
           )}
         />
         <FormButtons
-          submitLabel="Save Password"
+          submitLabel="Send Request"
           isLoading={form.formState.isSubmitting}
           size="lg"
           className="mt-6 w-fit"

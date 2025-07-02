@@ -10,8 +10,8 @@ export const generateMetadata = () => {
 
 export default function VerifyOtpPage() {
   return (
-    <div className="relative flex w-full min-h-screen items-center justify-center p-4 bg-muted/50">
-      <div className="absolute top-8 left-8 w-full md:left-0 md:justify-center flex gap-2">
+    <div className="relative flex w-full min-h-screen items-center justify-center p-4">
+      <div className="absolute top-8 left-8 md:w-full md:left-0 md:justify-center flex gap-2">
         <Link
           href="/"
           className="flex items-center gap-2 font-medium text-primary text-2xl"
