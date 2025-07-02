@@ -5,6 +5,7 @@ import { AuthAction } from "@/lib/store/slices/auth-slice";
 import { IApiError, IApiRequest, IApiResponse } from "@/lib/types/app-type";
 import { IEmailResponse, ISignUpRequest } from "@/lib/types/auth-type";
 import { useMutation } from "@tanstack/react-query";
+import { AxiosError } from "axios";
 import { useRouter } from "next/navigation";
 import { useDispatch } from "react-redux";
 import { toast } from "sonner";
@@ -15,7 +16,7 @@ export const useSignUp = () => {
 
   return useMutation<
     IApiResponse<IEmailResponse>,
-    IApiError,
+    AxiosError<IApiError>,
     IApiRequest<ISignUpRequest>
   >({
     mutationFn: async ({ body }) => {
@@ -29,7 +30,7 @@ export const useSignUp = () => {
       toast.success("Success. OTP send to " + data.email);
       return router.push("/auth/verify-otp");
     },
-    onError: (error) => console.log("error:", error),
+    onError: (err) => toast.error(err.response?.data.error.message),
     onSettled: () => dispatch(AppAction.setLoading(false)),
   });
 };

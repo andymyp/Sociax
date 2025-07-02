@@ -9,6 +9,7 @@ import { useRouter } from "next/navigation";
 import { useDispatch } from "react-redux";
 import { toast } from "sonner";
 import { jwtDecode } from "jwt-decode";
+import { AxiosError } from "axios";
 
 export const useVerifyOtp = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -16,7 +17,7 @@ export const useVerifyOtp = () => {
 
   return useMutation<
     IApiResponse<IAuthResponse>,
-    IApiError,
+    AxiosError<IApiError>,
     IApiRequest<IVerifyRequest>
   >({
     mutationFn: async ({ body }) => {
@@ -41,7 +42,7 @@ export const useVerifyOtp = () => {
         dispatch(AuthAction.setVerify(null));
       }
     },
-    onError: (error) => console.log("error:", error),
+    onError: (err) => toast.error(err.response?.data.error.message),
     onSettled: () => dispatch(AppAction.setLoading(false)),
   });
 };

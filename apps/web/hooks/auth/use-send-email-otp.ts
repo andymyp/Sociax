@@ -5,6 +5,7 @@ import { AuthAction } from "@/lib/store/slices/auth-slice";
 import { IApiError, IApiRequest, IApiResponse } from "@/lib/types/app-type";
 import { IEmailResponse } from "@/lib/types/auth-type";
 import { useMutation } from "@tanstack/react-query";
+import { AxiosError } from "axios";
 import { useDispatch } from "react-redux";
 import { toast } from "sonner";
 
@@ -13,7 +14,7 @@ export const useSendEmailOtp = () => {
 
   return useMutation<
     IApiResponse<IEmailResponse>,
-    IApiError,
+    AxiosError<IApiError>,
     IApiRequest<IEmailResponse>
   >({
     mutationFn: async ({ body }) => {
@@ -26,7 +27,7 @@ export const useSendEmailOtp = () => {
       dispatch(AuthAction.setVerify(data));
       toast.success("OTP send to " + data.email);
     },
-    onError: (error) => console.log("error:", error),
+    onError: (err) => toast.error(err.response?.data.error.message),
     onSettled: () => dispatch(AppAction.setLoading(false)),
   });
 };
