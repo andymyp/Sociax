@@ -1,14 +1,14 @@
 import { DottedSeparator } from "@/components/atoms/dotted-separator";
 import { Card, CardContent } from "@/components/molecules/card";
-import { VerifyOtpForm } from "@/components/organisms/verify-otp-form";
+import { ResetPasswordForm } from "@/components/organisms/reset-password-form";
 import Image from "next/image";
 import Link from "next/link";
 
 export const generateMetadata = () => {
-  return { title: "Sociax - Verify OTP" };
+  return { title: "Sociax - Reset Password" };
 };
 
-export default function VerifyOtpPage() {
+export default function ResetPasswordPage() {
   return (
     <div className="relative flex w-full min-h-screen items-center justify-center p-4 bg-muted/50">
       <div className="absolute top-8 left-8 w-full md:left-0 md:justify-center flex gap-2">
@@ -31,16 +31,16 @@ export default function VerifyOtpPage() {
       <Card className="w-full h-full md:w-[500px] border-none shadow-sm !py-0">
         <CardContent className="flex flex-col w-full items-center p-10 gap-4">
           <h1 className="font-semibold text-2xl text-center mb-3">
-            Verify OTP
+            Reset Password
           </h1>
           <div className="flex items-center justify-center my-2 w-full">
             <DottedSeparator />
             <p className="block w-full min-w-fit px-2 text-center text-sm dark:bg-gray-dark">
-              Enter your OTP
+              Enter your new password
             </p>
             <DottedSeparator />
           </div>
-          <VerifyOtpForm />
+          <ResetPasswordForm />
         </CardContent>
       </Card>
     </div>
