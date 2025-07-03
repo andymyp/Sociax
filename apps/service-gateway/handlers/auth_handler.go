@@ -89,48 +89,50 @@ func (h *Handlers) AuthHandler(action string) fiber.Handler {
 	}
 }
 
-func (h *Handlers) RefreshHandler(c *fiber.Ctx) error {
-	refreshToken := c.Cookies("refresh_token")
-	if refreshToken == "" {
-		return c.Status(fiber.StatusUnauthorized).JSON(rabbitmq.RPCResponse{
-			Error: &rabbitmq.RPCError{
-				Code:    fiber.StatusUnauthorized,
-				Message: "Unauthorized",
-			},
-		})
+func (h *Handlers) RefreshHandler(action string) fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		refreshToken := c.Cookies("refresh_token")
+		if refreshToken == "" {
+			return c.Status(fiber.StatusUnauthorized).JSON(rabbitmq.RPCResponse{
+				Error: &rabbitmq.RPCError{
+					Code:    fiber.StatusUnauthorized,
+					Message: "Unauthorized",
+				},
+			})
+		}
+
+		body := map[string]interface{}{
+			"refresh_token": refreshToken,
+		}
+
+		data, _ := json.Marshal(body)
+		pub, err := h.rpc.Publish(context.Background(), "auth", action, data)
+		if err != nil {
+			return c.Status(fiber.StatusInternalServerError).JSON(rabbitmq.RPCResponse{
+				Error: &rabbitmq.RPCError{
+					Code:    fiber.StatusInternalServerError,
+					Message: err.Error(),
+				},
+			})
+		}
+
+		var res rabbitmq.RPCResponse
+
+		if err := json.Unmarshal(pub, &res); err != nil {
+			return c.Status(fiber.StatusInternalServerError).JSON(rabbitmq.RPCResponse{
+				Error: &rabbitmq.RPCError{
+					Code:    fiber.StatusInternalServerError,
+					Message: err.Error(),
+				},
+			})
+		}
+
+		if res.Error != nil {
+			return c.Status(res.Error.Code).JSON(res)
+		}
+
+		return c.JSON(res)
 	}
-
-	body := map[string]interface{}{
-		"refresh_token": refreshToken,
-	}
-
-	data, _ := json.Marshal(body)
-	pub, err := h.rpc.Publish(context.Background(), "auth", "refresh-token", data)
-	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(rabbitmq.RPCResponse{
-			Error: &rabbitmq.RPCError{
-				Code:    fiber.StatusInternalServerError,
-				Message: err.Error(),
-			},
-		})
-	}
-
-	var res rabbitmq.RPCResponse
-
-	if err := json.Unmarshal(pub, &res); err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(rabbitmq.RPCResponse{
-			Error: &rabbitmq.RPCError{
-				Code:    fiber.StatusInternalServerError,
-				Message: err.Error(),
-			},
-		})
-	}
-
-	if res.Error != nil {
-		return c.Status(res.Error.Code).JSON(res)
-	}
-
-	return c.JSON(res)
 }
 
 func (h *Handlers) SignOutHandler(c *fiber.Ctx) error {

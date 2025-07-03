@@ -16,6 +16,7 @@ type Services interface {
 	SignInGoogleCallback(req *models.OAuthCallbackRequest) (*models.AuthResponse, error)
 	SignInGithubCallback(req *models.OAuthCallbackRequest) (*models.AuthResponse, error)
 	RefreshToken(req *models.RefreshTokenRequest) (*models.AuthResponse, *rabbitmq.RPCError, error)
+	CheckRefreshToken(req *models.RefreshTokenRequest) (*rabbitmq.RPCError, error)
 	RevokeRefreshToken(req *models.RefreshTokenRequest) (*rabbitmq.RPCError, error)
 }
 

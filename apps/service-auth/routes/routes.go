@@ -15,6 +15,7 @@ func Routes(handlers *handlers.Handlers) map[string]func([]byte) ([]byte, error)
 		"sign-in-oauth":          handlers.SignInOAuth,
 		"sign-in-oauth-callback": handlers.SignInOAuthCallback,
 		"refresh-token":          handlers.RefreshToken,
+		"check-auth":             handlers.CheckAuth,
 		"sign-out":               handlers.SignOut,
 	}
 }
