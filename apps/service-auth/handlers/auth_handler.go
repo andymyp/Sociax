@@ -113,33 +113,6 @@ func (h *Handlers) RefreshToken(body []byte) ([]byte, error) {
 	})
 }
 
-func (h *Handlers) CheckAuth(body []byte) ([]byte, error) {
-	_, span := h.tracer.Start(context.Background(), "CheckAuth")
-	defer span.End()
-
-	var req *models.RefreshTokenRequest
-
-	if err := json.Unmarshal(body, &req); err != nil {
-		return rabbitmq.ErrorResponse("Request is invalid", 400)
-	}
-
-	if err := utils.StructValidate(req); err != nil {
-		return rabbitmq.ErrorResponse(err.Error(), 400)
-	}
-
-	rpcErr, err := h.service.CheckRefreshToken(req)
-	if err != nil {
-		return rabbitmq.ErrorResponse(err.Error(), 500)
-	}
-	if rpcErr != nil {
-		return rabbitmq.ErrorResponse(rpcErr.Message, rpcErr.Code)
-	}
-
-	return rabbitmq.SuccessResponse(map[string]interface{}{
-		"message": "Authorized",
-	})
-}
-
 func (h *Handlers) SignOut(body []byte) ([]byte, error) {
 	_, span := h.tracer.Start(context.Background(), "SignOut")
 	defer span.End()

@@ -15,8 +15,6 @@ func AuthRoutes(app *fiber.App, handlers *handlers.Handlers) {
 	route.Post("/verify-otp", handlers.AuthHandler("verify-otp"))
 	route.Post("/reset-password", handlers.AuthHandler("reset-password"))
 	route.Post("/sign-in", handlers.AuthHandler("sign-in"))
-
-	route.Get("/check-auth", handlers.RefreshHandler("check-auth"))
 	route.Get("/refresh-token", handlers.RefreshHandler("refresh-token"))
 
 	route.Get("/sign-out", handlers.SignOutHandler)

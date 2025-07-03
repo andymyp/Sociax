@@ -204,24 +204,6 @@ func (s *services) RefreshToken(req *models.RefreshTokenRequest) (*models.AuthRe
 	return authResponse, nil, nil
 }
 
-func (s *services) CheckRefreshToken(req *models.RefreshTokenRequest) (*rabbitmq.RPCError, error) {
-	refreshToken, err := s.repo.GetRefreshToken(req)
-	if err != nil {
-		return nil, err
-	}
-	if refreshToken == nil {
-		err := &rabbitmq.RPCError{Message: "Unauthorized", Code: 401}
-		return err, nil
-	}
-
-	if time.Now().After(refreshToken.ExpiresAt) {
-		err := &rabbitmq.RPCError{Message: "Unauthorized", Code: 410}
-		return err, nil
-	}
-
-	return nil, nil
-}
-
 func (s *services) RevokeRefreshToken(req *models.RefreshTokenRequest) (*rabbitmq.RPCError, error) {
 	refreshToken, err := s.repo.GetRefreshToken(req)
 	if err != nil {
