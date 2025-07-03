@@ -15,6 +15,7 @@ type Services interface {
 	SignInOAuth(req *models.OAuthRequest) string
 	SignInGoogleCallback(req *models.OAuthCallbackRequest) (*models.AuthResponse, error)
 	SignInGithubCallback(req *models.OAuthCallbackRequest) (*models.AuthResponse, error)
+	RefreshToken(req *models.RefreshTokenRequest) (*models.AuthResponse, *rabbitmq.RPCError, error)
 }
 
 type services struct {

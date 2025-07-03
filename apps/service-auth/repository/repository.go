@@ -3,6 +3,7 @@ package repository
 import (
 	"Sociax/shared-go/models"
 
+	"github.com/google/uuid"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 )
@@ -17,6 +18,8 @@ type Repository interface {
 	CreateAuthProvider(provider *models.AuthProvider) error
 	CreateRefreshToken(refreshToken *models.RefreshToken) error
 	UpsertUser(user *models.User) (*models.User, error)
+	GetRefreshToken(req *models.RefreshTokenRequest) (*models.RefreshToken, error)
+	GetUserByID(id uuid.UUID) (*models.User, error)
 }
 
 type repo struct {
@@ -123,4 +126,32 @@ func (r *repo) UpsertUser(user *models.User) (*models.User, error) {
 	}
 
 	return checkUser, nil
+}
+
+func (r *repo) GetRefreshToken(req *models.RefreshTokenRequest) (*models.RefreshToken, error) {
+	var refreshToken *models.RefreshToken
+	err := r.db.Where("token=? AND revoked=?", req.RefreshToken, false).First(&refreshToken).Error
+
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return nil, nil
+		}
+		return nil, err
+	}
+
+	return refreshToken, err
+}
+
+func (r *repo) GetUserByID(id uuid.UUID) (*models.User, error) {
+	var user models.User
+	err := r.db.First(&user, id).Error
+
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return nil, nil
+		}
+		return nil, err
+	}
+
+	return &user, err
 }

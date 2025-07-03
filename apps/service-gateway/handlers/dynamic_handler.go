@@ -8,14 +8,6 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-type Handlers struct {
-	rpc *rabbitmq.RPCClient
-}
-
-func NewHandlers(rpc *rabbitmq.RPCClient) *Handlers {
-	return &Handlers{rpc}
-}
-
 func (h *Handlers) DynamicHandler(service, action string) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		var body map[string]interface{}

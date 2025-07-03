@@ -168,3 +168,38 @@ func (s *services) SignIn(req *models.SignInRequest) (*models.AuthResponse, *rab
 
 	return authResponse, nil, nil
 }
+
+func (s *services) RefreshToken(req *models.RefreshTokenRequest) (*models.AuthResponse, *rabbitmq.RPCError, error) {
+	refreshToken, err := s.repo.GetRefreshToken(req)
+	if err != nil {
+		return nil, nil, err
+	}
+	if refreshToken == nil {
+		err := &rabbitmq.RPCError{Message: "Unauthorized", Code: 401}
+		return nil, err, nil
+	}
+
+	if time.Now().After(refreshToken.ExpiresAt) {
+		err := &rabbitmq.RPCError{Message: "Unauthorized", Code: 410}
+		return nil, err, nil
+	}
+
+	user, err := s.repo.GetUserByID(refreshToken.UserID)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	user.Password = nil
+	user.Providers = nil
+	accessToken, err := helper.GenerateAccessToken(user)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	authResponse := &models.AuthResponse{
+		AccessToken:  accessToken,
+		RefreshToken: refreshToken.Token,
+	}
+
+	return authResponse, nil, nil
+}

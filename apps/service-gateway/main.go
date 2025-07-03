@@ -5,6 +5,7 @@ import (
 
 	"Sociax/service-gateway/config"
 	"Sociax/service-gateway/handlers"
+	"Sociax/service-gateway/middlewares"
 	"Sociax/service-gateway/routes"
 	"Sociax/shared-go/otelmetrics"
 	"Sociax/shared-go/rabbitmq"
@@ -13,7 +14,6 @@ import (
 	"github.com/goccy/go-json"
 	"github.com/gofiber/contrib/otelfiber/v2"
 	"github.com/gofiber/fiber/v2"
-	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/helmet"
 	"github.com/gofiber/fiber/v2/middleware/limiter"
 	"github.com/gofiber/fiber/v2/middleware/logger"
@@ -37,7 +37,7 @@ func main() {
 		JSONDecoder: json.Unmarshal,
 	})
 
-	app.Use(cors.New())
+	app.Use(middlewares.CorsMiddleware())
 	app.Use(helmet.New())
 	app.Use(limiter.New())
 	app.Use(logger.New(config.LoggerConfig))
