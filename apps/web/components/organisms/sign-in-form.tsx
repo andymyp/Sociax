@@ -9,21 +9,31 @@ import { SignInSchema } from "@/lib/schemas/auth-schema";
 import { Form, FormField } from "../molecules/form";
 import { MaterialInput } from "../molecules/material-input";
 import { FormButtons } from "../molecules/form-buttons";
+import { useSignIn } from "@/hooks/auth/use-sign-in";
+import { toast } from "sonner";
+import { useSelector } from "react-redux";
+import { AppState } from "@/lib/store";
 
 type FormValues = z.infer<typeof SignInSchema>;
 
 export const SignInForm = () => {
+  const { device_id, device } = useSelector(
+    (state: AppState) => state.auth.deviceInfo
+  );
+
   const form = useForm<FormValues>({
     resolver: zodResolver(SignInSchema),
     defaultValues: { email: "", password: "" },
   });
 
+  const { mutateAsync } = useSignIn();
+
   const onSubmit: SubmitHandler<FormValues> = async (data) => {
-    console.log(data);
+    await mutateAsync({ body: { device_id, device, ...data } });
   };
 
   const onError: SubmitErrorHandler<FormValues> = async (errors) => {
-    console.log(errors);
+    toast.error(Object.values(errors)[0]?.message);
   };
 
   return (
@@ -62,7 +72,10 @@ export const SignInForm = () => {
           )}
         />
         <div className="flex w-full justify-end mb-2">
-          <Link href="/auth/forgot-password" className="text-sm p-0 hover:underline">
+          <Link
+            href="/auth/forgot-password"
+            className="text-sm p-0 hover:underline"
+          >
             Forgot password?
           </Link>
         </div>

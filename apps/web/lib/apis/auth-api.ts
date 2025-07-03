@@ -4,6 +4,7 @@ import {
   IAuthResponse,
   IEmailResponse,
   IResetPasswordRequest,
+  ISignInRequest,
   ISignUpRequest,
   IVerifyRequest,
 } from "../types/auth-type";
@@ -33,5 +34,12 @@ export async function resetPasswordApi(
   payload: IResetPasswordRequest
 ): Promise<IApiResponse<IAuthResponse>> {
   const { data } = await axiosClient.post("/auth/reset-password", payload);
+  return data;
+}
+
+export async function signInApi(
+  payload: ISignInRequest
+): Promise<IApiResponse<IAuthResponse>> {
+  const { data } = await axiosClient.post("/auth/sign-in", payload);
   return data;
 }

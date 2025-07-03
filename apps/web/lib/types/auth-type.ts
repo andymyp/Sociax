@@ -46,3 +46,8 @@ export interface IResetPasswordRequest extends IDeviceInfo {
   password: string;
   confirm_password: string;
 }
+
+export interface ISignInRequest extends IDeviceInfo {
+  email: string;
+  password: string;
+}
