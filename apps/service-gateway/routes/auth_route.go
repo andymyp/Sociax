@@ -17,4 +17,5 @@ func AuthRoutes(app *fiber.App, handlers *handlers.Handlers) {
 	route.Post("/sign-in", handlers.AuthHandler("sign-in"))
 
 	route.Get("/refresh-token", handlers.RefreshHandler)
+	route.Get("/sign-out", handlers.SignOutHandler)
 }

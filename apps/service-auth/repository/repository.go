@@ -20,6 +20,7 @@ type Repository interface {
 	UpsertUser(user *models.User) (*models.User, error)
 	GetRefreshToken(req *models.RefreshTokenRequest) (*models.RefreshToken, error)
 	GetUserByID(id uuid.UUID) (*models.User, error)
+	UpdateRefreshToken(refreshToken *models.RefreshToken) error
 }
 
 type repo struct {
@@ -154,4 +155,8 @@ func (r *repo) GetUserByID(id uuid.UUID) (*models.User, error) {
 	}
 
 	return &user, err
+}
+
+func (r *repo) UpdateRefreshToken(refreshToken *models.RefreshToken) error {
+	return r.db.Save(refreshToken).Error
 }
