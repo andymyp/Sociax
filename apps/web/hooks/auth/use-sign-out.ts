@@ -1,44 +1,36 @@
-import { resetPasswordApi } from "@/lib/apis/auth-api";
-import { AppDispatch } from "@/lib/store";
-import { setUser } from "@/lib/store/actions/auth-action";
+import { signOutApi } from "@/lib/apis/auth-api";
+import { AppDispatch, persistor } from "@/lib/store";
 import { AppAction } from "@/lib/store/slices/app-slice";
 import { setAccessToken } from "@/lib/token";
 import { IApiError, IApiRequest, IApiResponse } from "@/lib/types/app-type";
-import {
-  IAuthResponse,
-  IResetPasswordRequest,
-  IUser,
-} from "@/lib/types/auth-type";
 import { useMutation } from "@tanstack/react-query";
 import { AxiosError } from "axios";
-import { jwtDecode } from "jwt-decode";
 import { useRouter } from "next/navigation";
 import { useDispatch } from "react-redux";
 import { toast } from "sonner";
 
-export const useResetPassword = () => {
+export const useSignOut = () => {
   const dispatch = useDispatch<AppDispatch>();
   const router = useRouter();
 
   return useMutation<
-    IApiResponse<IAuthResponse>,
+    IApiResponse<{ message: string }>,
     AxiosError<IApiError>,
-    IApiRequest<IResetPasswordRequest>
+    IApiRequest
   >({
-    mutationFn: async ({ body }) => {
+    mutationFn: async () => {
       dispatch(AppAction.setLoading(true));
 
-      const data = await resetPasswordApi(body);
+      const data = await signOutApi();
       return data;
     },
-    onSuccess: async ({ data }) => {
-      const user = jwtDecode<IUser>(data.access_token);
+    onSuccess: async () => {
+      dispatch({ type: "RESET" });
+      await persistor.purge();
 
-      setAccessToken(data.access_token);
-      await dispatch(setUser(user));
+      setAccessToken(null);
 
-      toast.success("Welcome " + user.name);
-      router.replace("/");
+      router.replace("/auth/sign-in");
     },
     onError: (err) => toast.error(err.response?.data.error.message),
     onSettled: () => dispatch(AppAction.setLoading(false)),

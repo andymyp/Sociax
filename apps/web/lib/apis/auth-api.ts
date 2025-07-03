@@ -43,3 +43,8 @@ export async function signInApi(
   const { data } = await axiosClient.post("/auth/sign-in", payload);
   return data;
 }
+
+export async function signOutApi(): Promise<IApiResponse<{ message: string }>> {
+  const { data } = await axiosClient.get("/auth/sign-out");
+  return data;
+}

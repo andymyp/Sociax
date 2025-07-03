@@ -8,10 +8,10 @@ import { VerifyOtpForm } from "../organisms/verify-otp-form";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, AppState } from "@/lib/store";
 import { useRouter } from "next/navigation";
-import Loading from "@/app/loading";
 import { AuthAction } from "@/lib/store/slices/auth-slice";
 import { Button } from "../atoms/button";
 import { useSendEmailOtp } from "@/hooks/auth/use-send-email-otp";
+import { Loading } from "../templates/loading";
 
 export default function VerifyOtpPage() {
   const router = useRouter();

@@ -1,7 +1,8 @@
 import { signInApi } from "@/lib/apis/auth-api";
 import { AppDispatch } from "@/lib/store";
-import { setToken, setUser } from "@/lib/store/actions/auth-action";
+import { setUser } from "@/lib/store/actions/auth-action";
 import { AppAction } from "@/lib/store/slices/app-slice";
+import { setAccessToken } from "@/lib/token";
 import { IApiError, IApiRequest, IApiResponse } from "@/lib/types/app-type";
 import { IAuthResponse, ISignInRequest, IUser } from "@/lib/types/auth-type";
 import { useMutation } from "@tanstack/react-query";
@@ -29,7 +30,7 @@ export const useSignIn = () => {
     onSuccess: async ({ data }) => {
       const user = jwtDecode<IUser>(data.access_token);
 
-      await dispatch(setToken(data.access_token));
+      setAccessToken(data.access_token);
       await dispatch(setUser(user));
 
       toast.success("Welcome " + user.name);

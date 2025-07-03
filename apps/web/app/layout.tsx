@@ -13,8 +13,7 @@ import { ThemeProvider } from "@/components/providers/theme-provider";
 import { ReduxProvider } from "@/components/providers/redux-provider";
 import { QueryProvider } from "@/components/providers/query-provider";
 import { LoadingProvider } from "@/components/providers/loading-provider";
-
-import { Toaster } from "@/components/atoms/sonner";
+import { ToastProvider } from "@/components/providers/toast-provider";
 
 export const metadata: Metadata = {
   title: "Sociax",
@@ -48,14 +47,7 @@ export default function RootLayout({
           <ReduxProvider>
             <QueryProvider>
               <LoadingProvider>
-                {children}
-                <Toaster 
-                  position="top-right" 
-                  duration={6000} 
-                  richColors 
-                  expand 
-                  closeButton 
-                />
+                <ToastProvider>{children}</ToastProvider>
               </LoadingProvider>
             </QueryProvider>
           </ReduxProvider>

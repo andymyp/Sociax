@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Spinner } from "@/components/atoms/spinner";
 
-export function LoadingTemplate() {
+export function Loading() {
   const [progress, setProgress] = useState(0);
 
   useEffect(() => {

@@ -8,7 +8,7 @@ import { ResetPasswordForm } from "../organisms/reset-password-form";
 import { useRouter } from "next/navigation";
 import { useSelector } from "react-redux";
 import { AppState } from "@/lib/store";
-import Loading from "@/app/loading";
+import { Loading } from "../templates/loading";
 
 export default function ResetPasswordPage() {
   const router = useRouter();

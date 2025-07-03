@@ -1,7 +1,7 @@
-"use client"
+"use client";
 
 import { AppProgressProvider } from "@bprogress/next";
-import { Loading } from "../atoms/loading";
+import { ProgressProvider } from "./progress-provider";
 
 interface Props {
   children: React.ReactNode;
@@ -15,8 +15,7 @@ export const LoadingProvider = ({ children }: Props) => {
       options={{ showSpinner: true }}
       shallowRouting
     >
-      <Loading />
-      {children}
+      <ProgressProvider>{children}</ProgressProvider>
     </AppProgressProvider>
   );
 };

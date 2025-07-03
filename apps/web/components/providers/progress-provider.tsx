@@ -1,16 +1,20 @@
-"use client"
+"use client";
 
-import { AppState } from "@/store";
+import { AppState } from "@/lib/store";
 import { useProgress } from "@bprogress/next";
-import { useEffect } from "react";
+import React from "react";
 import { useSelector } from "react-redux";
 
-export const Loading = () => {
+export const ProgressProvider = ({
+  children,
+}: {
+  children: React.ReactNode;
+}) => {
   const { start, stop } = useProgress();
 
   const isLoading = useSelector((state: AppState) => state.app.isLoading);
 
-  useEffect(() => {
+  React.useEffect(() => {
     if (isLoading) {
       start();
     } else {
@@ -18,5 +22,5 @@ export const Loading = () => {
     }
   }, [isLoading, start, stop]);
 
-  return null;
-}
+  return <>{children}</>;
+};

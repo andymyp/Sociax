@@ -11,7 +11,6 @@ interface IinitialState {
   deviceInfo: IDeviceInfo;
   verify: IEmailResponse | null;
   resendOtp: IResendOtp;
-  token: string | null;
   user: IUser | null;
 }
 
@@ -25,7 +24,6 @@ const initialState: IinitialState = {
     attempts: 0,
     nextResendAt: null,
   },
-  token: null,
   user: null,
 };
 
@@ -47,9 +45,6 @@ const authSlice = createSlice({
     },
     resetResendOtp: (state) => {
       state.resendOtp = initialState.resendOtp;
-    },
-    setToken: (state, action: PayloadAction<IinitialState["token"]>) => {
-      state.token = action.payload;
     },
     setUser: (state, action: PayloadAction<IinitialState["user"]>) => {
       state.user = action.payload;

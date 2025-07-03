@@ -8,12 +8,6 @@ export const setVerify = (data: IEmailResponse | null) => {
   };
 };
 
-export const setToken = (data: string | null) => {
-  return async (dispatch: AppDispatch) => {
-    dispatch(AuthAction.setToken(data));
-  };
-};
-
 export const setUser = (data: IUser | null) => {
   return async (dispatch: AppDispatch) => {
     dispatch(AuthAction.setUser(data));

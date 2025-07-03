@@ -9,7 +9,8 @@ import { useDispatch } from "react-redux";
 import { toast } from "sonner";
 import { jwtDecode } from "jwt-decode";
 import { AxiosError } from "axios";
-import { setToken, setUser, setVerify } from "@/lib/store/actions/auth-action";
+import { setUser, setVerify } from "@/lib/store/actions/auth-action";
+import { setAccessToken } from "@/lib/token";
 
 export const useVerifyOtp = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -40,7 +41,7 @@ export const useVerifyOtp = () => {
       } else {
         const user = jwtDecode<IUser>(data.access_token);
 
-        await dispatch(setToken(data.access_token));
+        setAccessToken(data.access_token);
         await dispatch(setUser(user));
 
         toast.success("Welcome " + user.name);
