@@ -1,9 +1,31 @@
+"use client";
+
+import React from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { DottedSeparator } from "../atoms/dotted-separator";
 import { ResetPasswordForm } from "../organisms/reset-password-form";
+import { useRouter } from "next/navigation";
+import { useSelector } from "react-redux";
+import { AppState } from "@/lib/store";
+import Loading from "@/app/loading";
 
 export default function ResetPasswordPage() {
+  const router = useRouter();
+  const verify = useSelector((state: AppState) => state.auth.verify);
+
+  React.useEffect(() => {
+    if (!verify) {
+      router.replace("/auth/sign-in");
+    }
+
+    if (verify && !verify.reset) {
+      router.replace("/auth/sign-up");
+    }
+  }, [verify, router]);
+
+  if (!verify) return <Loading />;
+
   return (
     <div className="relative flex w-full min-h-screen items-center justify-center p-4 bg-background">
       <div className="absolute top-8 left-8 md:w-full md:left-0 md:justify-center flex gap-2">
@@ -34,7 +56,7 @@ export default function ResetPasswordPage() {
           </p>
           <DottedSeparator />
         </div>
-        <ResetPasswordForm />
+        <ResetPasswordForm email={verify.email} />
       </div>
     </div>
   );

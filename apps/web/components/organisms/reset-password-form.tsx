@@ -8,21 +8,35 @@ import { ResetPasswordSchema } from "@/lib/schemas/auth-schema";
 import { Form, FormField } from "../molecules/form";
 import { MaterialInput } from "../molecules/material-input";
 import { FormButtons } from "../molecules/form-buttons";
+import { toast } from "sonner";
+import { useResetPassword } from "@/hooks/auth/use-reset-password";
+import { useSelector } from "react-redux";
+import { AppState } from "@/lib/store";
 
 type FormValues = z.infer<typeof ResetPasswordSchema>;
 
-export const ResetPasswordForm = () => {
+interface Props {
+  email: string;
+}
+
+export const ResetPasswordForm = ({ email }: Props) => {
+  const { device_id, device } = useSelector(
+    (state: AppState) => state.auth.deviceInfo
+  );
+
   const form = useForm<FormValues>({
     resolver: zodResolver(ResetPasswordSchema),
     defaultValues: { password: "", confirm_password: "" },
   });
 
+  const { mutateAsync } = useResetPassword();
+
   const onSubmit: SubmitHandler<FormValues> = async (data) => {
-    console.log(data);
+    await mutateAsync({ body: { device_id, device, email, ...data } });
   };
 
   const onError: SubmitErrorHandler<FormValues> = async (errors) => {
-    console.log(errors);
+    toast.error(Object.values(errors)[0]?.message);
   };
 
   return (

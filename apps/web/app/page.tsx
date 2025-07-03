@@ -3,7 +3,7 @@
 import { Button } from "@/components/atoms/button";
 import { ModeToggle } from "@/components/molecules/mode-toggle";
 import { AppDispatch, AppState } from "@/lib/store";
-import { AuthAction } from "@/lib/store/slices/auth-slice";
+import { setVerify } from "@/lib/store/actions/auth-action";
 import Image from "next/image";
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -14,7 +14,7 @@ export default function Home() {
 
   React.useEffect(() => {
     if (verify) {
-      dispatch(AuthAction.setVerify(null));
+      dispatch(setVerify(null));
     }
   }, [dispatch, verify]);
 

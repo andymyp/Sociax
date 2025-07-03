@@ -1,7 +1,6 @@
 import { verifyOtpApi } from "@/lib/apis/auth-api";
 import { AppDispatch } from "@/lib/store";
 import { AppAction } from "@/lib/store/slices/app-slice";
-import { AuthAction } from "@/lib/store/slices/auth-slice";
 import { IApiError, IApiRequest, IApiResponse } from "@/lib/types/app-type";
 import { IAuthResponse, IUser, IVerifyRequest } from "@/lib/types/auth-type";
 import { useMutation } from "@tanstack/react-query";
@@ -10,6 +9,7 @@ import { useDispatch } from "react-redux";
 import { toast } from "sonner";
 import { jwtDecode } from "jwt-decode";
 import { AxiosError } from "axios";
+import { setToken, setUser, setVerify } from "@/lib/store/actions/auth-action";
 
 export const useVerifyOtp = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -26,14 +26,22 @@ export const useVerifyOtp = () => {
       const data = await verifyOtpApi(body);
       return data;
     },
-    onSuccess: ({ data }) => {
+    onSuccess: async ({ data }) => {
       if (data.type && data.type === 1) {
+        await dispatch(
+          setVerify({
+            type: data.type,
+            email: data.email!,
+            reset: true,
+          })
+        );
+
         router.replace("/auth/reset-password");
       } else {
         const user = jwtDecode<IUser>(data.access_token);
 
-        dispatch(AuthAction.setToken(data.access_token));
-        dispatch(AuthAction.setUser(user));
+        await dispatch(setToken(data.access_token));
+        await dispatch(setUser(user));
 
         toast.success("Welcome " + user.name);
         router.replace("/");

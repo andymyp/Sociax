@@ -8,6 +8,8 @@ import { ForgotPasswordSchema } from "@/lib/schemas/auth-schema";
 import { Form, FormField } from "../molecules/form";
 import { MaterialInput } from "../molecules/material-input";
 import { FormButtons } from "../molecules/form-buttons";
+import { toast } from "sonner";
+import { useForgotPassword } from "@/hooks/auth/use-forgot-password";
 
 type FormValues = z.infer<typeof ForgotPasswordSchema>;
 
@@ -17,12 +19,14 @@ export const ForgotPasswordForm = () => {
     defaultValues: { email: "" },
   });
 
+  const { mutateAsync } = useForgotPassword();
+
   const onSubmit: SubmitHandler<FormValues> = async (data) => {
-    console.log(data);
+    await mutateAsync({ body: { type: 1, ...data } });
   };
 
   const onError: SubmitErrorHandler<FormValues> = async (errors) => {
-    console.log(errors);
+    toast.error(Object.values(errors)[0]?.message);
   };
 
   return (

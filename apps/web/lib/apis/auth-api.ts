@@ -3,6 +3,7 @@ import { IApiResponse } from "../types/app-type";
 import {
   IAuthResponse,
   IEmailResponse,
+  IResetPasswordRequest,
   ISignUpRequest,
   IVerifyRequest,
 } from "../types/auth-type";
@@ -25,5 +26,12 @@ export async function sendEmailOtpApi(
   payload: IEmailResponse
 ): Promise<IApiResponse<IEmailResponse>> {
   const { data } = await axiosClient.post("/auth/send-email-otp", payload);
+  return data;
+}
+
+export async function resetPasswordApi(
+  payload: IResetPasswordRequest
+): Promise<IApiResponse<IAuthResponse>> {
+  const { data } = await axiosClient.post("/auth/reset-password", payload);
   return data;
 }

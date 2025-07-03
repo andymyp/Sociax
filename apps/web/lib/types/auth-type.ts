@@ -20,6 +20,7 @@ export interface ISignUpRequest extends Omit<IUser, "id"> {
 export interface IEmailResponse {
   type: number;
   email: string;
+  reset?: boolean;
 }
 
 export interface IVerifyRequest extends IEmailResponse {
@@ -38,4 +39,10 @@ export interface IAuthResponse {
 export interface IResendOtp {
   attempts: number;
   nextResendAt: number | null;
+}
+
+export interface IResetPasswordRequest extends IDeviceInfo {
+  email: string;
+  password: string;
+  confirm_password: string;
 }

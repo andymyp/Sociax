@@ -29,6 +29,10 @@ export default function VerifyOtpPage() {
     if (!verify) {
       router.replace("/auth/sign-up");
     }
+
+    if (verify && verify.reset) {
+      router.replace("/auth/sign-in");
+    }
   }, [verify, router]);
 
   React.useEffect(() => {
