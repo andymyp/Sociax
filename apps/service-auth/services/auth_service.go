@@ -175,7 +175,7 @@ func (s *services) RefreshToken(req *models.RefreshTokenRequest) (*models.AuthRe
 		return nil, nil, err
 	}
 	if refreshToken == nil {
-		err := &rabbitmq.RPCError{Message: "Unauthorized", Code: 401}
+		err := &rabbitmq.RPCError{Message: "Unauthorized", Code: 410}
 		return nil, err, nil
 	}
 
