@@ -16,7 +16,7 @@ interface IinitialState {
 
 const initialState: IinitialState = {
   deviceInfo: {
-    device_id: uuidv4(),
+    device_id: getOrCreateDeviceId(),
     device: "web",
   },
   verify: null,
@@ -26,6 +26,20 @@ const initialState: IinitialState = {
   },
   user: null,
 };
+
+function getOrCreateDeviceId() {
+  if (typeof window === "undefined") return "";
+
+  const key = "device_id";
+  let deviceId = localStorage.getItem(key);
+
+  if (!deviceId) {
+    deviceId = uuidv4();
+    localStorage.setItem(key, deviceId);
+  }
+
+  return deviceId;
+}
 
 const delayOtpSteps = [60, 120, 120, 3600];
 
