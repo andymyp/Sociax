@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"time"
 
 	"Sociax/service-gateway/config"
 	"Sociax/service-gateway/handlers"
@@ -39,7 +40,12 @@ func main() {
 
 	app.Use(middlewares.CorsMiddleware())
 	app.Use(helmet.New())
-	app.Use(limiter.New())
+
+	app.Use(limiter.New(limiter.Config{
+		Max:        100,
+		Expiration: 1 * time.Minute,
+	}))
+
 	app.Use(logger.New(config.LoggerConfig))
 
 	app.Use(otelfiber.Middleware())
