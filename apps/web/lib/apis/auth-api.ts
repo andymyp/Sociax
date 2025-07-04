@@ -4,6 +4,7 @@ import {
   IAuthResponse,
   IEmailResponse,
   IResetPasswordRequest,
+  ISignInOauthRequest,
   ISignInRequest,
   ISignUpRequest,
   IVerifyRequest,
@@ -41,6 +42,13 @@ export async function signInApi(
   payload: ISignInRequest
 ): Promise<IApiResponse<IAuthResponse>> {
   const { data } = await axiosClient.post("/auth/sign-in", payload);
+  return data;
+}
+
+export async function signInOauthApi(
+  payload: ISignInOauthRequest
+): Promise<IApiResponse<{ url: string }>> {
+  const { data } = await axiosClient.post("/oauth/sign-in", payload);
   return data;
 }
 

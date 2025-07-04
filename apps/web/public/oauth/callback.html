@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>OAuth Callback</title>
+  </head>
+  <body>
+    <script>
+      const hash = new URLSearchParams(location.hash.substring(1));
+      const access_token = hash.get("access_token");
+
+      if (window.opener && access_token) {
+        window.opener.postMessage(
+          {
+            source: "oauth2-signin",
+            data: { access_token },
+          },
+          window.location.origin
+        );
+      } else {
+        console.error("Missing window.opener or token");
+      }
+    </script>
+  </body>
+</html>

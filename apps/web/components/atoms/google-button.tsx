@@ -1,18 +1,29 @@
 "use client";
 
+import { useSelector } from "react-redux";
 import { Button } from "./button";
+import { useSignInOauth } from "@/hooks/auth/use-sign-in-oauth";
+import { AppState } from "@/lib/store";
 
 interface Props {
   className?: string;
 }
 
 export const GoogleButton = ({ className }: Props) => {
+  const { device_id, device } = useSelector(
+    (state: AppState) => state.auth.deviceInfo
+  );
+
+  const { mutateAsync } = useSignInOauth();
+
   return (
     <Button
       type="button"
       variant="outline"
       className={className}
-      onClick={() => {}}
+      onClick={async () =>
+        await mutateAsync({ body: { device_id, device, provider: "google" } })
+      }
     >
       <svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" fill="none">
         <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>

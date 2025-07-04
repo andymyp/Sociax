@@ -51,3 +51,7 @@ export interface ISignInRequest extends IDeviceInfo {
   email: string;
   password: string;
 }
+
+export interface ISignInOauthRequest extends IDeviceInfo {
+  provider: string;
+}

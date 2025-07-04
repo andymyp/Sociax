@@ -1,18 +1,29 @@
 "use client";
 
+import { useSelector } from "react-redux";
 import { Button } from "./button";
+import { AppState } from "@/lib/store";
+import { useSignInOauth } from "@/hooks/auth/use-sign-in-oauth";
 
 interface Props {
   className?: string;
 }
 
 export const GithubButton = ({ className }: Props) => {
+  const { device_id, device } = useSelector(
+    (state: AppState) => state.auth.deviceInfo
+  );
+
+  const { mutateAsync } = useSignInOauth();
+
   return (
     <Button
       type="button"
       variant="outline"
       className={className}
-      onClick={() => {}}
+      onClick={async () =>
+        await mutateAsync({ body: { device_id, device, provider: "github" } })
+      }
     >
       <svg
         viewBox="0 0 16 16"
