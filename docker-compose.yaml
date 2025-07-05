@@ -1,4 +1,4 @@
-version: '3.8'
+version: "3.8"
 
 services:
   postgres:
@@ -6,21 +6,31 @@ services:
     image: postgres:alpine
     environment:
       POSTGRES_USER: sociax
-      POSTGRES_PASSWORD: '@sociax2025!!!'
+      POSTGRES_PASSWORD: "@sociax2025!!!"
       POSTGRES_DB: sociaxdb
     ports:
       - "5432:5432"
     restart: unless-stopped
 
+  redis:
+    container_name: redis
+    image: redis:alpine
+    command: ["redis-server", "--requirepass", "@sociax2025!!!"]
+    ports:
+      - "6379:6379"
+    environment:
+      REDIS_USER: default
+      REDIS_PASSWORD: "@sociax2025!!!"
+
   rabbitmq:
     container_name: rabbitmq
     image: rabbitmq:management-alpine
     ports:
-      - "5672:5672"   # Server
-      - "9090:15672"  # Management UI
+      - "5672:5672" # Server
+      - "9090:15672" # Management UI
     environment:
       RABBITMQ_DEFAULT_USER: sociax
-      RABBITMQ_DEFAULT_PASS: '@sociax2025!!!'
+      RABBITMQ_DEFAULT_PASS: "@sociax2025!!!"
     restart: unless-stopped
 
   otel-collector:
@@ -30,9 +40,9 @@ services:
     volumes:
       - ./infras/otel/config.yaml:/etc/otel/config.yaml
     ports:
-      - "4317:4317"  # OTLP gRPC
-      - "4318:4318"  # OTLP HTTP
-      - "8889:8889"  # Prometheus exporter
+      - "4317:4317" # OTLP gRPC
+      - "4318:4318" # OTLP HTTP
+      - "8889:8889" # Prometheus exporter
     restart: unless-stopped
 
   prometheus:

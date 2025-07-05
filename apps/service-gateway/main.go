@@ -2,7 +2,6 @@ package main
 
 import (
 	"log"
-	"time"
 
 	"Sociax/service-gateway/config"
 	"Sociax/service-gateway/handlers"
@@ -16,7 +15,6 @@ import (
 	"github.com/gofiber/contrib/otelfiber/v2"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/helmet"
-	"github.com/gofiber/fiber/v2/middleware/limiter"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 )
 
@@ -26,6 +24,8 @@ func main() {
 
 	cleanupMatrics := otelmetrics.InitMetrics(config.MetricsConfig)
 	defer cleanupMatrics()
+
+	redisStorage := config.InitFiberRedisStorage()
 
 	rpc, err := rabbitmq.NewClient(config.RabbitMQConfig)
 	if err != nil {
@@ -38,16 +38,10 @@ func main() {
 		JSONDecoder: json.Unmarshal,
 	})
 
-	app.Use(middlewares.CorsMiddleware())
+	app.Use(middlewares.Cors())
 	app.Use(helmet.New())
-
-	app.Use(limiter.New(limiter.Config{
-		Max:        100,
-		Expiration: 1 * time.Minute,
-	}))
-
+	app.Use(middlewares.Limiter(redisStorage))
 	app.Use(logger.New(config.LoggerConfig))
-
 	app.Use(otelfiber.Middleware())
 
 	app.Get("/", func(c *fiber.Ctx) error {

@@ -6,6 +6,7 @@ import (
 	"Sociax/shared-go/utils"
 
 	"github.com/gofiber/fiber/v2/middleware/logger"
+	"github.com/gofiber/storage/redis/v3"
 )
 
 var (
@@ -35,4 +36,16 @@ func InitAllConfig() {
 		TimeFormat: "2006/01/02 15:04:05",
 		TimeZone:   "Asia/Jakarta",
 	}
+}
+
+func InitFiberRedisStorage() *redis.Storage {
+	return redis.New(redis.Config{
+		Host:      utils.GetEnvOrFail("REDIS_HOST"),
+		Port:      utils.GetEnvIntOrFail("REDIS_PORT"),
+		Username:  utils.GetEnvOrFail("REDIS_USER"),
+		Password:  utils.GetEnvOrFail("REDIS_PASS"),
+		Database:  0,
+		Reset:     false,
+		TLSConfig: nil,
+	})
 }
