@@ -5,14 +5,20 @@ export interface IDeviceInfo {
 
 export interface IUser {
   id: string;
-  name?: string;
+  name: string;
   email: string;
-  birthday?: Date;
-  gender?: string;
-  bio?: string;
+  username: string;
+  birthday: Date;
+  gender: string;
+  bio: string;
+  confirmed: boolean;
+  boarded: boolean;
+  online: boolean;
 }
 
-export interface ISignUpRequest extends Omit<IUser, "id"> {
+export interface ISignUpRequest {
+  name: string;
+  email: string;
   password: string;
   confirm_password: string;
 }

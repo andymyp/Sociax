@@ -19,11 +19,16 @@ export default function MainLayout({
   const dispatch = useDispatch<AppDispatch>();
   const user = useSelector((state: AppState) => state.auth.user);
   const verify = useSelector((state: AppState) => state.auth.verify);
+  const didRunRef = React.useRef(false);
 
   React.useEffect(() => {
     const token = getAccessToken();
     if (!user && !token) {
       router.replace("/auth/sign-in");
+    }
+
+    if (user && !user.boarded) {
+      router.replace("/onboarding");
     }
   }, [router, user]);
 
@@ -39,13 +44,17 @@ export default function MainLayout({
     const token = getAccessToken();
     if (token) return;
 
+    if (didRunRef && didRunRef.current) return;
+
     const restoreAccessToken = async () => {
+      didRunRef.current = true;
+
       try {
         const res = await axiosClient.get("/auth/refresh-token");
         const newToken = res.data.data.access_token;
         setAccessToken(newToken);
       } catch (err: any) {
-        if (err.response?.status === 410) {
+        if (err.status === 410) {
           dispatch(setUser(null));
           router.replace("/auth/sign-in");
         }

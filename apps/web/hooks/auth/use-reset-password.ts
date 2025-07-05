@@ -38,7 +38,12 @@ export const useResetPassword = () => {
       await dispatch(setUser(user));
 
       toast.success("Welcome " + user.name);
-      router.replace("/");
+
+      if (!user.boarded) {
+        router.replace("/onboarding");
+      } else {
+        router.replace("/");
+      }
     },
     onError: (err) => toast.error(err.response?.data.error.message),
     onSettled: () => dispatch(AppAction.setLoading(false)),
