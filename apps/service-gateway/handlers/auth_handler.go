@@ -77,7 +77,7 @@ func (h *Handlers) AuthHandler(action string) fiber.Handler {
 					Name:     "refresh_token",
 					Value:    token,
 					HTTPOnly: true,
-					Secure:   false,
+					Secure:   true,
 					SameSite: "Lax",
 					Path:     "/",
 					MaxAge:   7 * 24 * 60 * 60,
@@ -151,21 +151,6 @@ func (h *Handlers) OAuthCallbackHandler(c *fiber.Ctx) error {
 		return c.Status(res.Error.Code).JSON(res)
 	}
 
-	if dataMap, ok := res.Data.(map[string]interface{}); ok {
-		if token, exists := dataMap["refresh_token"].(string); exists {
-			c.Cookie(&fiber.Cookie{
-				Name:     "refresh_token",
-				Value:    token,
-				HTTPOnly: true,
-				Secure:   false,
-				SameSite: "Lax",
-				Path:     "/",
-				MaxAge:   7 * 24 * 60 * 60,
-			})
-			delete(dataMap, "refresh_token")
-		}
-	}
-
 	var accessToken string
 
 	if dataMap, ok := res.Data.(map[string]interface{}); ok {
@@ -174,7 +159,7 @@ func (h *Handlers) OAuthCallbackHandler(c *fiber.Ctx) error {
 				Name:     "refresh_token",
 				Value:    token,
 				HTTPOnly: true,
-				Secure:   false,
+				Secure:   true,
 				SameSite: "Lax",
 				Path:     "/",
 				MaxAge:   7 * 24 * 60 * 60,
@@ -286,7 +271,7 @@ func (h *Handlers) SignOutHandler(c *fiber.Ctx) error {
 		Name:     "refresh_token",
 		Value:    "",
 		HTTPOnly: true,
-		Secure:   false,
+		Secure:   true,
 		SameSite: "Lax",
 		Path:     "/",
 		MaxAge:   -1,
