@@ -3,13 +3,14 @@ package services
 import (
 	"Sociax/service-user/repository"
 	"Sociax/shared-go/models"
-	"Sociax/shared-go/rabbitmq"
 )
 
 type Services interface {
-	Create(user *models.User) (*models.User, *rabbitmq.RPCError, error)
-	FindByEmail(email string) (*models.User, error)
+	GetByID(req *models.IDRequest) (*models.User, error)
+	GetByEmail(req *models.EmailRequest) (*models.User, error)
+	GetByUsername(req *models.UsernameRequest) (*models.User, error)
 	Update(user *models.User) (*models.User, error)
+	GetAll(filters map[string]string) (int64, []models.User, error)
 }
 
 type services struct {
@@ -20,41 +21,22 @@ func NewServices(r repository.Repository) Services {
 	return &services{r}
 }
 
-func (s *services) Create(user *models.User) (*models.User, *rabbitmq.RPCError, error) {
-	check, _ := s.repo.FindByEmail(user.Email)
-
-	if check != nil && check.Confirmed {
-		err := &rabbitmq.RPCError{Message: "Email is already registered", Code: 409}
-		return nil, err, nil
-	}
-
-	if check != nil && !check.Confirmed {
-		user.ID = check.ID
-		user.CreatedAt = check.CreatedAt
-
-		if err := s.repo.Update(user); err != nil {
-			return nil, nil, err
-		}
-	}
-
-	if check == nil {
-		if err := s.repo.Create(user); err != nil {
-			return nil, nil, err
-		}
-	}
-
-	res, err := s.repo.FindByEmail(user.Email)
-	return res, nil, err
+func (s *services) GetByID(req *models.IDRequest) (*models.User, error) {
+	return s.repo.GetByID(req)
 }
 
-func (s *services) FindByEmail(email string) (*models.User, error) {
-	return s.repo.FindByEmail(email)
+func (s *services) GetByEmail(req *models.EmailRequest) (*models.User, error) {
+	return s.repo.GetByEmail(req)
+}
+
+func (s *services) GetByUsername(req *models.UsernameRequest) (*models.User, error) {
+	return s.repo.GetByUsername(req)
 }
 
 func (s *services) Update(user *models.User) (*models.User, error) {
-	if err := s.repo.Update(user); err != nil {
-		return nil, err
-	}
+	return s.repo.Update(user)
+}
 
-	return s.repo.FindByID(user.ID)
+func (s *services) GetAll(filters map[string]string) (int64, []models.User, error) {
+	return s.repo.GetAll(filters)
 }

@@ -30,3 +30,11 @@ func (user *User) BeforeCreate(tx *gorm.DB) (err error) {
 	user.ID = uuid.New()
 	return
 }
+
+type IDRequest struct {
+	ID uuid.UUID `json:"id" validate:"required"`
+}
+
+type UsernameRequest struct {
+	Username string `json:"username" validate:"required"`
+}

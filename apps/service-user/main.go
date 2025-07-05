@@ -1,6 +1,7 @@
 package main
 
 import (
+	"Sociax/service-user/config"
 	"Sociax/service-user/handlers"
 	"Sociax/service-user/repository"
 	"Sociax/service-user/routes"
@@ -16,36 +17,23 @@ import (
 
 func main() {
 	utils.LoadEnv()
+	config.InitAllConfig()
 
-	db := database.InitDatabase(
-		utils.GetEnvOrFail("POSTGRES_HOST"),
-		utils.GetEnvOrFail("POSTGRES_USER"),
-		utils.GetEnvOrFail("POSTGRES_PASS"),
-		utils.GetEnvOrFail("POSTGRES_DB"),
-		utils.GetEnvOrFail("POSTGRES_PORT"),
-	)
-	
-	cleanupTracer := oteltracer.InitTracer(
-		utils.GetEnvOrFail("TRACER_ENDPOINT"),
-		utils.GetEnvOrFail("SERVICE_NAME"),
-	)
+	db := database.InitDatabase(config.DatabaseConfig)
+
+	cleanupTracer := oteltracer.InitTracer(config.TracerConfig)
 	defer cleanupTracer()
 
-	tracer := otel.Tracer(utils.GetEnvOrFail("SERVICE_NAME"))
+	tracer := otel.Tracer(config.ServiceName)
 
-	rpc, err := rabbitmq.NewClient(rabbitmq.Config{
-		User:      utils.GetEnvOrFail("RABBITMQ_USER"),
-		Password:  utils.GetEnvOrFail("RABBITMQ_PASS"),
-		Host:      utils.GetEnvOrFail("RABBITMQ_HOST"),
-		QueueName: utils.GetEnvOrFail("RABBITMQ_QUEUE"),
-	})
+	rpc, err := rabbitmq.NewClient(config.RabbitMQConfig)
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer rpc.Close()
 
 	repo := repository.NewRepository(db)
-	service := services.NewServices(repo) 
+	service := services.NewServices(repo)
 	handler := handlers.NewHandlers(service, tracer)
 
 	err = rpc.Consume(routes.Routes(handler))
