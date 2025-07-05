@@ -1,17 +1,21 @@
 "use client";
 
 import { z } from "zod";
-import { LockOpen } from "lucide-react";
-import { SubmitErrorHandler, SubmitHandler, useForm } from "react-hook-form";
+import { SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ResetPasswordSchema } from "@/lib/schemas/auth-schema";
-import { Form, FormField } from "../molecules/form";
-import { MaterialInput } from "../molecules/material-input";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormMessage,
+} from "../molecules/form";
 import { FormButtons } from "../molecules/form-buttons";
-import { toast } from "sonner";
 import { useResetPassword } from "@/hooks/auth/use-reset-password";
 import { useSelector } from "react-redux";
 import { AppState } from "@/lib/store";
+import { Input } from "../atoms/input";
 
 type FormValues = z.infer<typeof ResetPasswordSchema>;
 
@@ -35,46 +39,44 @@ export const ResetPasswordForm = ({ email }: Props) => {
     await mutateAsync({ body: { device_id, device, email, ...data } });
   };
 
-  const onError: SubmitErrorHandler<FormValues> = async (errors) => {
-    toast.error(Object.values(errors)[0]?.message);
-  };
-
   return (
     <Form {...form}>
       <form
         className="flex flex-col items-center justify-center w-full gap-4"
-        onSubmit={form.handleSubmit(onSubmit, onError)}
+        onSubmit={form.handleSubmit(onSubmit)}
       >
         <FormField
           control={form.control}
           name="password"
-          render={({ field, fieldState }) => (
-            <MaterialInput
-              label="Password"
-              type="password"
-              icon={LockOpen}
-              disabled={form.formState.isSubmitting}
-              fieldState={fieldState}
-              {...field}
-              required
-              toggleablePassword
-            />
+          render={({ field }) => (
+            <FormItem className="w-full">
+              <FormControl>
+                <Input
+                  placeholder="Password"
+                  type="password"
+                  toggleablePassword
+                  {...field}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
           )}
         />
         <FormField
           control={form.control}
           name="confirm_password"
-          render={({ field, fieldState }) => (
-            <MaterialInput
-              label="Confirm Password"
-              type="password"
-              icon={LockOpen}
-              disabled={form.formState.isSubmitting}
-              fieldState={fieldState}
-              {...field}
-              required
-              toggleablePassword
-            />
+          render={({ field }) => (
+            <FormItem className="w-full">
+              <FormControl>
+                <Input
+                  placeholder="Confirm password"
+                  type="password"
+                  toggleablePassword
+                  {...field}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
           )}
         />
         <FormButtons

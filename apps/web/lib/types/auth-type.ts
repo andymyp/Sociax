@@ -5,10 +5,10 @@ export interface IDeviceInfo {
 
 export interface IUser {
   id: string;
-  name: string;
-  birthday: Date;
-  gender: string;
+  name?: string;
   email: string;
+  birthday?: Date;
+  gender?: string;
   bio?: string;
 }
 

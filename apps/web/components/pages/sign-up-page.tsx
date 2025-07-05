@@ -8,8 +8,8 @@ import { SignUpForm } from "../organisms/sign-up-form";
 
 export default function SignUpPage() {
   return (
-    <div className="w-screen h-screen grid grid-cols-1 md:grid-cols-2">
-      <div className="hidden md:flex items-center justify-center bg-muted/50">
+    <div className="w-full grid grid-cols-1 md:grid-cols-2">
+      <div className="hidden md:flex bg-muted/50">
         <GridCard
           label="Sociax"
           title="Hello Friend"
@@ -17,7 +17,7 @@ export default function SignUpPage() {
           description="Please sign up to create your account by completing the necessary fields and start the adventure"
         />
       </div>
-      <div className="relative flex items-center justify-center p-8 md:px-[76px] bg-background">
+      <div className="relative flex items-center justify-center p-8 md:px-20">
         <div className="absolute top-8 left-8 flex md:hidden gap-2">
           <Link
             href="/"
@@ -35,7 +35,7 @@ export default function SignUpPage() {
             Sociax
           </Link>
         </div>
-        <div className="w-full max-w-md flex flex-col gap-5">
+        <div className="w-full max-w-xs flex flex-col gap-5 pt-20 mb-10 md:pt-0 md:mb-0">
           <h1 className="text-2xl font-semibold text-center mb-4">Sign Up</h1>
           <div className="flex gap-4 w-full px-1">
             <div className="w-1/2">
@@ -55,7 +55,10 @@ export default function SignUpPage() {
           <SignUpForm />
           <p className="text-center text-sm px-1">
             Already have an account?{" "}
-            <Link href="/auth/sign-in" className="text-primary hover:underline">
+            <Link
+              href="/auth/sign-in"
+              className="text-primary font-medium hover:underline"
+            >
               Sign in
             </Link>
           </p>

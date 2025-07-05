@@ -3,11 +3,12 @@
 
 import { Loading } from "@/components/templates/loading";
 import { axiosClient } from "@/lib/axios";
-import { AppState } from "@/lib/store";
+import { AppDispatch, AppState } from "@/lib/store";
+import { setUser, setVerify } from "@/lib/store/actions/auth-action";
 import { getAccessToken, setAccessToken } from "@/lib/token";
 import { useRouter } from "next/navigation";
 import React from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 export default function MainLayout({
   children,
@@ -15,7 +16,9 @@ export default function MainLayout({
   children: React.ReactNode;
 }) {
   const router = useRouter();
+  const dispatch = useDispatch<AppDispatch>();
   const user = useSelector((state: AppState) => state.auth.user);
+  const verify = useSelector((state: AppState) => state.auth.verify);
 
   React.useEffect(() => {
     const token = getAccessToken();
@@ -23,6 +26,12 @@ export default function MainLayout({
       router.replace("/auth/sign-in");
     }
   }, [router, user]);
+
+  React.useEffect(() => {
+    if (user && verify) {
+      dispatch(setVerify(null));
+    }
+  }, [dispatch, user, verify]);
 
   React.useEffect(() => {
     if (!user) return;
@@ -37,13 +46,14 @@ export default function MainLayout({
         setAccessToken(newToken);
       } catch (err: any) {
         if (err.response?.status === 410) {
+          dispatch(setUser(null));
           router.replace("/auth/sign-in");
         }
       }
     };
 
     restoreAccessToken();
-  }, [router, user]);
+  }, [dispatch, router, user]);
 
   if (!user) return <Loading />;
 

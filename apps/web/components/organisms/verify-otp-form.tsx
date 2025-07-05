@@ -1,7 +1,7 @@
 "use client";
 
 import { z } from "zod";
-import { SubmitErrorHandler, SubmitHandler, useForm } from "react-hook-form";
+import { SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { VerifyOtpSchema } from "@/lib/schemas/auth-schema";
 import { Form, FormControl, FormField, FormItem } from "../molecules/form";
@@ -11,7 +11,6 @@ import { REGEXP_ONLY_DIGITS } from "input-otp";
 import { useVerifyOtp } from "@/hooks/auth/use-verify-otp";
 import { useSelector } from "react-redux";
 import { AppState } from "@/lib/store";
-import { toast } from "sonner";
 
 type FormValues = z.infer<typeof VerifyOtpSchema>;
 
@@ -38,15 +37,11 @@ export const VerifyOtpForm = ({ type, email }: Props) => {
     });
   };
 
-  const onError: SubmitErrorHandler<FormValues> = async (errors) => {
-    toast.error(Object.values(errors)[0]?.message);
-  };
-
   return (
     <Form {...form}>
       <form
-        className="flex flex-col items-center justify-center w-full gap-4"
-        onSubmit={form.handleSubmit(onSubmit, onError)}
+        className="flex flex-col items-center w-full gap-4"
+        onSubmit={form.handleSubmit(onSubmit)}
       >
         <FormField
           control={form.control}

@@ -23,10 +23,8 @@ export default function AuthLayout({
   if (user) return <Loading />;
 
   return (
-    <main className="min-h-screen">
-      <div className="flex w-full min-h-screen justify-center items-center bg-muted">
-        {children}
-      </div>
+    <main className="min-h-screen bg-gradient-to-br from-violet-50 via-white to-purple-50 dark:from-gray-950 dark:via-gray-900 dark:to-violet-950">
+      <div className="flex w-full justify-center items-center">{children}</div>
     </main>
   );
 }

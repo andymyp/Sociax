@@ -2,17 +2,22 @@
 
 import { z } from "zod";
 import Link from "next/link";
-import { LockOpen, Mail } from "lucide-react";
-import { SubmitErrorHandler, SubmitHandler, useForm } from "react-hook-form";
+import { Mail } from "lucide-react";
+import { SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { SignInSchema } from "@/lib/schemas/auth-schema";
-import { Form, FormField } from "../molecules/form";
-import { MaterialInput } from "../molecules/material-input";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormMessage,
+} from "../molecules/form";
 import { FormButtons } from "../molecules/form-buttons";
 import { useSignIn } from "@/hooks/auth/use-sign-in";
-import { toast } from "sonner";
 import { useSelector } from "react-redux";
 import { AppState } from "@/lib/store";
+import { Input } from "../atoms/input";
 
 type FormValues = z.infer<typeof SignInSchema>;
 
@@ -32,43 +37,39 @@ export const SignInForm = () => {
     await mutateAsync({ body: { device_id, device, ...data } });
   };
 
-  const onError: SubmitErrorHandler<FormValues> = async (errors) => {
-    toast.error(Object.values(errors)[0]?.message);
-  };
-
   return (
     <Form {...form}>
       <form
         className="flex flex-col w-full gap-4"
-        onSubmit={form.handleSubmit(onSubmit, onError)}
+        onSubmit={form.handleSubmit(onSubmit)}
       >
         <FormField
           control={form.control}
           name="email"
-          render={({ field, fieldState }) => (
-            <MaterialInput
-              label="Email"
-              type="text"
-              icon={Mail}
-              disabled={form.formState.isSubmitting}
-              fieldState={fieldState}
-              {...field}
-            />
+          render={({ field }) => (
+            <FormItem>
+              <FormControl>
+                <Input placeholder="Email" rightIcon={Mail} {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
           )}
         />
         <FormField
           control={form.control}
           name="password"
-          render={({ field, fieldState }) => (
-            <MaterialInput
-              label="Password"
-              type="password"
-              icon={LockOpen}
-              disabled={form.formState.isSubmitting}
-              fieldState={fieldState}
-              {...field}
-              toggleablePassword
-            />
+          render={({ field }) => (
+            <FormItem>
+              <FormControl>
+                <Input
+                  placeholder="Password"
+                  type="password"
+                  toggleablePassword
+                  {...field}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
           )}
         />
         <div className="flex w-full justify-end mb-2">

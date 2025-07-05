@@ -23,6 +23,7 @@ export default function VerifyOtpPage() {
     (state: AppState) => state.auth.resendOtp
   );
 
+  const didRunRef = React.useRef(false);
   const [remaining, setRemaining] = React.useState(0);
 
   React.useEffect(() => {
@@ -36,8 +37,9 @@ export default function VerifyOtpPage() {
   }, [verify, router]);
 
   React.useEffect(() => {
-    if (attempts === 0) {
+    if (attempts === 0 && !didRunRef.current) {
       dispatch(AuthAction.startOtpCooldown());
+      didRunRef.current = true;
     }
   }, [dispatch, attempts]);
 
@@ -79,8 +81,8 @@ export default function VerifyOtpPage() {
   if (!verify) return <Loading />;
 
   return (
-    <div className="relative flex w-full min-h-screen items-center justify-center p-4 bg-background">
-      <div className="absolute top-8 left-8 md:w-full md:left-0 md:justify-center flex gap-2">
+    <div className="relative flex w-full min-h-screen items-center justify-center p-8">
+      <div className="absolute top-8 left-8 flex gap-2">
         <Link
           href="/"
           className="flex items-center gap-2 font-medium text-primary text-2xl"
@@ -97,7 +99,7 @@ export default function VerifyOtpPage() {
           Sociax
         </Link>
       </div>
-      <div className="flex flex-col m-auto justify-center items-center w-80 gap-4">
+      <div className="flex flex-col items-center max-w-xs w-full gap-4 pt-20 mb-10 md:pt-0 md:mb-0">
         <h1 className="font-semibold text-2xl text-center mb-3">Verify OTP</h1>
         <div className="flex items-center justify-center my-2 w-full">
           <DottedSeparator />
