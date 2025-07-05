@@ -11,6 +11,8 @@ import (
 type Repository interface {
 	CreateUser(user *models.User) (*models.User, error)
 	GetUserByEmail(email string) (*models.User, error)
+	GetUserByUsername(username string) (*models.User, error)
+	GetUsernames(username string) ([]string, error)
 	UpdateUser(user *models.User) error
 	CreateOTP(emailOTP *models.EmailOTP) error
 	GetOTP(req *models.OTPRequest) (*models.EmailOTP, error)
@@ -51,6 +53,30 @@ func (r *repo) GetUserByEmail(email string) (*models.User, error) {
 	}
 
 	return user, nil
+}
+
+func (r *repo) GetUserByUsername(username string) (*models.User, error) {
+	var user *models.User
+	err := r.db.Where("username=?", username).First(&user).Error
+
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return nil, nil
+		}
+		return nil, err
+	}
+
+	return user, nil
+}
+
+func (r *repo) GetUsernames(username string) ([]string, error) {
+	var usernames []string
+	err := r.db.Model(&models.User{}).Where("username LIKE ?", username+"%").Pluck("username", &usernames).Error
+	if err != nil {
+		return nil, err
+	}
+
+	return usernames, nil
 }
 
 func (r *repo) UpdateUser(user *models.User) error {

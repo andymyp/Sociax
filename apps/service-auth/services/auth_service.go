@@ -37,6 +37,11 @@ func (s *services) SignUp(req *models.User) (*rabbitmq.RPCError, error) {
 	}
 
 	if checkUser == nil {
+		req.Username, err = s.GenerateUniqueUsername(req.Email)
+		if err != nil {
+			return nil, err
+		}
+
 		user, err := s.repo.CreateUser(req)
 		if err != nil {
 			return nil, err
