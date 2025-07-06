@@ -11,6 +11,7 @@ export interface IUser {
   birthday: Date;
   gender: string;
   bio: string;
+  avatar_url: string;
   confirmed: boolean;
   boarded: boolean;
   online: boolean;
