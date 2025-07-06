@@ -7,6 +7,7 @@ import (
 	"Sociax/service-gateway/handlers"
 	"Sociax/service-gateway/middlewares"
 	"Sociax/service-gateway/routes"
+	"Sociax/service-gateway/services"
 	"Sociax/shared-go/otelmetrics"
 	"Sociax/shared-go/rabbitmq"
 	"Sociax/shared-go/utils"
@@ -48,7 +49,8 @@ func main() {
 		return c.SendString("Gateway service is running.")
 	})
 
-	handler := handlers.NewHandlers(rpc)
+	service := services.NewServices(rpc)
+	handler := handlers.NewHandlers(service)
 
 	routes.AuthRoutes(app, handler)
 	routes.OAuthRoutes(app, handler)

@@ -1,9 +1,8 @@
 package handlers
 
 import (
+	"Sociax/service-gateway/helper"
 	"Sociax/shared-go/rabbitmq"
-	"context"
-	"encoding/json"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -23,19 +22,7 @@ func (h *Handlers) DynamicHandler(service, action string) fiber.Handler {
 			}
 		}
 
-		if body == nil {
-			body = make(map[string]interface{})
-		}
-
-		for key, val := range c.AllParams() {
-			body[key] = val
-		}
-
-		for key, val := range c.Queries() {
-			body[key] = val
-		}
-
-		mergedData, err := json.Marshal(body)
+		rpcBody, err := helper.MakeRpcRequestBody(body, c.AllParams(), c.Queries())
 		if err != nil {
 			return c.Status(fiber.StatusInternalServerError).JSON(rabbitmq.RPCResponse{
 				Error: &rabbitmq.RPCError{
@@ -45,19 +32,8 @@ func (h *Handlers) DynamicHandler(service, action string) fiber.Handler {
 			})
 		}
 
-		pub, err := h.rpc.Publish(context.Background(), service, action, mergedData)
+		res, err := h.service.RpcService(service, action, rpcBody)
 		if err != nil {
-			return c.Status(fiber.StatusInternalServerError).JSON(rabbitmq.RPCResponse{
-				Error: &rabbitmq.RPCError{
-					Code:    fiber.StatusInternalServerError,
-					Message: err.Error(),
-				},
-			})
-		}
-
-		var res rabbitmq.RPCResponse
-
-		if err := json.Unmarshal(pub, &res); err != nil {
 			return c.Status(fiber.StatusInternalServerError).JSON(rabbitmq.RPCResponse{
 				Error: &rabbitmq.RPCError{
 					Code:    fiber.StatusInternalServerError,
@@ -70,6 +46,6 @@ func (h *Handlers) DynamicHandler(service, action string) fiber.Handler {
 			return c.Status(res.Error.Code).JSON(res)
 		}
 
-		return c.JSON(res)
+		return c.Status(res.Code).JSON(res)
 	}
 }

@@ -1,13 +1,13 @@
 package handlers
 
 import (
-	"Sociax/shared-go/rabbitmq"
+	"Sociax/service-gateway/services"
 )
 
 type Handlers struct {
-	rpc *rabbitmq.RPCClient
+	service services.Services
 }
 
-func NewHandlers(rpc *rabbitmq.RPCClient) *Handlers {
-	return &Handlers{rpc}
+func NewHandlers(service services.Services) *Handlers {
+	return &Handlers{service}
 }

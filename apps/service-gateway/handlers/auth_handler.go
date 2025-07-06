@@ -1,9 +1,9 @@
 package handlers
 
 import (
+	"Sociax/service-gateway/helper"
 	"Sociax/shared-go/rabbitmq"
 	"Sociax/shared-go/utils"
-	"context"
 	"encoding/json"
 
 	"github.com/gofiber/fiber/v2"
@@ -24,19 +24,7 @@ func (h *Handlers) AuthHandler(action string) fiber.Handler {
 			}
 		}
 
-		if body == nil {
-			body = make(map[string]interface{})
-		}
-
-		for key, val := range c.AllParams() {
-			body[key] = val
-		}
-
-		for key, val := range c.Queries() {
-			body[key] = val
-		}
-
-		mergedData, err := json.Marshal(body)
+		rpcBody, err := helper.MakeRpcRequestBody(body, c.AllParams(), c.Queries())
 		if err != nil {
 			return c.Status(fiber.StatusInternalServerError).JSON(rabbitmq.RPCResponse{
 				Error: &rabbitmq.RPCError{
@@ -46,19 +34,8 @@ func (h *Handlers) AuthHandler(action string) fiber.Handler {
 			})
 		}
 
-		pub, err := h.rpc.Publish(context.Background(), "auth", action, mergedData)
+		res, err := h.service.RpcService("auth", action, rpcBody)
 		if err != nil {
-			return c.Status(fiber.StatusInternalServerError).JSON(rabbitmq.RPCResponse{
-				Error: &rabbitmq.RPCError{
-					Code:    fiber.StatusInternalServerError,
-					Message: err.Error(),
-				},
-			})
-		}
-
-		var res rabbitmq.RPCResponse
-
-		if err := json.Unmarshal(pub, &res); err != nil {
 			return c.Status(fiber.StatusInternalServerError).JSON(rabbitmq.RPCResponse{
 				Error: &rabbitmq.RPCError{
 					Code:    fiber.StatusInternalServerError,
@@ -104,19 +81,7 @@ func (h *Handlers) OAuthCallbackHandler(c *fiber.Ctx) error {
 		}
 	}
 
-	if body == nil {
-		body = make(map[string]interface{})
-	}
-
-	for key, val := range c.AllParams() {
-		body[key] = val
-	}
-
-	for key, val := range c.Queries() {
-		body[key] = val
-	}
-
-	mergedData, err := json.Marshal(body)
+	rpcBody, err := helper.MakeRpcRequestBody(body, c.AllParams(), c.Queries())
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(rabbitmq.RPCResponse{
 			Error: &rabbitmq.RPCError{
@@ -126,19 +91,8 @@ func (h *Handlers) OAuthCallbackHandler(c *fiber.Ctx) error {
 		})
 	}
 
-	pub, err := h.rpc.Publish(context.Background(), "auth", "sign-in-oauth-callback", mergedData)
+	res, err := h.service.RpcService("auth", "sign-in-oauth-callback", rpcBody)
 	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(rabbitmq.RPCResponse{
-			Error: &rabbitmq.RPCError{
-				Code:    fiber.StatusInternalServerError,
-				Message: err.Error(),
-			},
-		})
-	}
-
-	var res rabbitmq.RPCResponse
-
-	if err := json.Unmarshal(pub, &res); err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(rabbitmq.RPCResponse{
 			Error: &rabbitmq.RPCError{
 				Code:    fiber.StatusInternalServerError,
@@ -197,19 +151,8 @@ func (h *Handlers) RefreshHandler(action string) fiber.Handler {
 		}
 
 		data, _ := json.Marshal(body)
-		pub, err := h.rpc.Publish(context.Background(), "auth", action, data)
+		res, err := h.service.RpcService("auth", action, data)
 		if err != nil {
-			return c.Status(fiber.StatusInternalServerError).JSON(rabbitmq.RPCResponse{
-				Error: &rabbitmq.RPCError{
-					Code:    fiber.StatusInternalServerError,
-					Message: err.Error(),
-				},
-			})
-		}
-
-		var res rabbitmq.RPCResponse
-
-		if err := json.Unmarshal(pub, &res); err != nil {
 			return c.Status(fiber.StatusInternalServerError).JSON(rabbitmq.RPCResponse{
 				Error: &rabbitmq.RPCError{
 					Code:    fiber.StatusInternalServerError,
@@ -242,19 +185,8 @@ func (h *Handlers) SignOutHandler(c *fiber.Ctx) error {
 	}
 
 	data, _ := json.Marshal(body)
-	pub, err := h.rpc.Publish(context.Background(), "auth", "sign-out", data)
+	res, err := h.service.RpcService("auth", "sign-out", data)
 	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(rabbitmq.RPCResponse{
-			Error: &rabbitmq.RPCError{
-				Code:    fiber.StatusInternalServerError,
-				Message: err.Error(),
-			},
-		})
-	}
-
-	var res rabbitmq.RPCResponse
-
-	if err := json.Unmarshal(pub, &res); err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(rabbitmq.RPCResponse{
 			Error: &rabbitmq.RPCError{
 				Code:    fiber.StatusInternalServerError,
