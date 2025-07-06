@@ -4,7 +4,7 @@ import React from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { DottedSeparator } from "../atoms/dotted-separator";
-import { VerifyOtpForm } from "../organisms/verify-otp-form";
+import { VerifyOtpForm } from "../organisms/forms/verify-otp-form";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, AppState } from "@/lib/store";
 import { useRouter } from "next/navigation";

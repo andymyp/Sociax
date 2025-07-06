@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { DottedSeparator } from "../atoms/dotted-separator";
-import { ForgotPasswordForm } from "../organisms/forgot-password-form";
+import { ForgotPasswordForm } from "../organisms/forms/forgot-password-form";
 
 export default function ForgotPasswordPage() {
   return (

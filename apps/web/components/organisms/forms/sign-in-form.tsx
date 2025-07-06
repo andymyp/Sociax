@@ -12,12 +12,12 @@ import {
   FormField,
   FormItem,
   FormMessage,
-} from "../molecules/form";
-import { FormButtons } from "../molecules/form-buttons";
+} from "../../molecules/form";
+import { FormButtons } from "../../molecules/form-buttons";
 import { useSignIn } from "@/hooks/auth/use-sign-in";
 import { useSelector } from "react-redux";
 import { AppState } from "@/lib/store";
-import { Input } from "../atoms/input";
+import { Input } from "../../atoms/input";
 
 type FormValues = z.infer<typeof SignInSchema>;
 
@@ -49,7 +49,12 @@ export const SignInForm = () => {
           render={({ field }) => (
             <FormItem>
               <FormControl>
-                <Input placeholder="Email" rightIcon={Mail} {...field} />
+                <Input
+                  placeholder="Email"
+                  rightIcon={Mail}
+                  disabled={form.formState.isSubmitting}
+                  {...field}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -64,6 +69,7 @@ export const SignInForm = () => {
                 <Input
                   placeholder="Password"
                   type="password"
+                  disabled={form.formState.isSubmitting}
                   toggleablePassword
                   {...field}
                 />

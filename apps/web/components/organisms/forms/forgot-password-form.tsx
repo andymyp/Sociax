@@ -11,10 +11,10 @@ import {
   FormField,
   FormItem,
   FormMessage,
-} from "../molecules/form";
-import { FormButtons } from "../molecules/form-buttons";
+} from "../../molecules/form";
+import { FormButtons } from "../../molecules/form-buttons";
 import { useForgotPassword } from "@/hooks/auth/use-forgot-password";
-import { Input } from "../atoms/input";
+import { Input } from "../../atoms/input";
 
 type FormValues = z.infer<typeof ForgotPasswordSchema>;
 
@@ -42,7 +42,12 @@ export const ForgotPasswordForm = () => {
           render={({ field }) => (
             <FormItem className="w-full">
               <FormControl>
-                <Input placeholder="Email" rightIcon={Mail} {...field} />
+                <Input
+                  placeholder="Email"
+                  rightIcon={Mail}
+                  disabled={form.formState.isSubmitting}
+                  {...field}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>

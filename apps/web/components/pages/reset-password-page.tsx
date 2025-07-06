@@ -4,7 +4,7 @@ import React from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { DottedSeparator } from "../atoms/dotted-separator";
-import { ResetPasswordForm } from "../organisms/reset-password-form";
+import { ResetPasswordForm } from "../organisms/forms/reset-password-form";
 import { useRouter } from "next/navigation";
 import { useSelector } from "react-redux";
 import { AppState } from "@/lib/store";

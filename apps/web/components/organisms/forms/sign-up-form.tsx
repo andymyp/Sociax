@@ -11,10 +11,10 @@ import {
   FormField,
   FormItem,
   FormMessage,
-} from "../molecules/form";
-import { FormButtons } from "../molecules/form-buttons";
+} from "../../molecules/form";
+import { FormButtons } from "../../molecules/form-buttons";
 import { useSignUp } from "@/hooks/auth/use-sign-up";
-import { Input } from "../atoms/input";
+import { Input } from "../../atoms/input";
 
 type FormValues = z.infer<typeof SignUpSchema>;
 
@@ -47,7 +47,12 @@ export const SignUpForm = () => {
           render={({ field }) => (
             <FormItem>
               <FormControl>
-                <Input placeholder="Full name" rightIcon={User2} {...field} />
+                <Input
+                  placeholder="Full name"
+                  rightIcon={User2}
+                  disabled={form.formState.isSubmitting}
+                  {...field}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -59,7 +64,12 @@ export const SignUpForm = () => {
           render={({ field }) => (
             <FormItem>
               <FormControl>
-                <Input placeholder="Email" rightIcon={Mail} {...field} />
+                <Input
+                  placeholder="Email"
+                  rightIcon={Mail}
+                  disabled={form.formState.isSubmitting}
+                  {...field}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -74,6 +84,7 @@ export const SignUpForm = () => {
                 <Input
                   placeholder="Password"
                   type="password"
+                  disabled={form.formState.isSubmitting}
                   toggleablePassword
                   {...field}
                 />
@@ -91,6 +102,7 @@ export const SignUpForm = () => {
                 <Input
                   placeholder="Confirm password"
                   type="password"
+                  disabled={form.formState.isSubmitting}
                   toggleablePassword
                   {...field}
                 />

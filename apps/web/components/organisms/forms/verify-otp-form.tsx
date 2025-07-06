@@ -4,9 +4,13 @@ import { z } from "zod";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { VerifyOtpSchema } from "@/lib/schemas/auth-schema";
-import { Form, FormControl, FormField, FormItem } from "../molecules/form";
-import { FormButtons } from "../molecules/form-buttons";
-import { InputOTP, InputOTPGroup, InputOTPSlot } from "../molecules/input-otp";
+import { Form, FormControl, FormField, FormItem } from "../../molecules/form";
+import { FormButtons } from "../../molecules/form-buttons";
+import {
+  InputOTP,
+  InputOTPGroup,
+  InputOTPSlot,
+} from "../../molecules/input-otp";
 import { REGEXP_ONLY_DIGITS } from "input-otp";
 import { useVerifyOtp } from "@/hooks/auth/use-verify-otp";
 import { useSelector } from "react-redux";
@@ -49,7 +53,12 @@ export const VerifyOtpForm = ({ type, email }: Props) => {
           render={({ field }) => (
             <FormItem>
               <FormControl>
-                <InputOTP maxLength={6} pattern={REGEXP_ONLY_DIGITS} {...field}>
+                <InputOTP
+                  maxLength={6}
+                  pattern={REGEXP_ONLY_DIGITS}
+                  disabled={form.formState.isSubmitting}
+                  {...field}
+                >
                   <InputOTPGroup>
                     <InputOTPSlot index={0} />
                     <InputOTPSlot index={1} />

@@ -10,12 +10,12 @@ import {
   FormField,
   FormItem,
   FormMessage,
-} from "../molecules/form";
-import { FormButtons } from "../molecules/form-buttons";
+} from "../../molecules/form";
+import { FormButtons } from "../../molecules/form-buttons";
 import { useResetPassword } from "@/hooks/auth/use-reset-password";
 import { useSelector } from "react-redux";
 import { AppState } from "@/lib/store";
-import { Input } from "../atoms/input";
+import { Input } from "../../atoms/input";
 
 type FormValues = z.infer<typeof ResetPasswordSchema>;
 
@@ -54,6 +54,7 @@ export const ResetPasswordForm = ({ email }: Props) => {
                 <Input
                   placeholder="Password"
                   type="password"
+                  disabled={form.formState.isSubmitting}
                   toggleablePassword
                   {...field}
                 />
@@ -71,6 +72,7 @@ export const ResetPasswordForm = ({ email }: Props) => {
                 <Input
                   placeholder="Confirm password"
                   type="password"
+                  disabled={form.formState.isSubmitting}
                   toggleablePassword
                   {...field}
                 />

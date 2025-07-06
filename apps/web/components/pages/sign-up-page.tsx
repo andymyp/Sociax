@@ -4,7 +4,7 @@ import Image from "next/image";
 import { GoogleButton } from "../atoms/google-button";
 import { GithubButton } from "../atoms/github-button";
 import { DottedSeparator } from "../atoms/dotted-separator";
-import { SignUpForm } from "../organisms/sign-up-form";
+import { SignUpForm } from "../organisms/forms/sign-up-form";
 
 export default function SignUpPage() {
   return (
