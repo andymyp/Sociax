@@ -14,3 +14,15 @@ export interface IApiError {
     message: string;
   };
 }
+
+export interface CropArea {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+}
+
+export interface CropPoint {
+  x: number;
+  y: number;
+}
