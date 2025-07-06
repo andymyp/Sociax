@@ -38,7 +38,15 @@ func Access() fiber.Handler {
 		}
 
 		claims, _ := token.Claims.(jwt.MapClaims)
-		c.Locals("user", claims)
+		userID, ok := claims["user_id"].(string)
+		if !ok {
+			return c.Status(fiber.StatusUnauthorized).JSON(rabbitmq.RPCError{
+				Code:    fiber.StatusUnauthorized,
+				Message: "Invalid token claims",
+			})
+		}
+
+		c.Locals("user_id", userID)
 		return c.Next()
 	}
 }

@@ -7,7 +7,6 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/limiter"
 	"github.com/gofiber/storage/redis/v3"
-	"github.com/golang-jwt/jwt/v5"
 )
 
 func Limiter(redisStorage *redis.Storage) fiber.Handler {
@@ -17,13 +16,8 @@ func Limiter(redisStorage *redis.Storage) fiber.Handler {
 		Storage:    redisStorage,
 
 		KeyGenerator: func(c *fiber.Ctx) string {
-			claimsRaw := c.Locals("user")
-			if claims, ok := claimsRaw.(jwt.MapClaims); ok {
-				if userIDRaw, ok := claims["user_id"]; ok {
-					if userID, ok := userIDRaw.(string); ok {
-						return "user: " + userID
-					}
-				}
+			if userID, ok := c.Locals("user_id").(string); ok {
+				return "user: " + userID
 			}
 
 			return "ip: " + c.IP()
