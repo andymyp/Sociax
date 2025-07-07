@@ -11,7 +11,7 @@ import { toast } from "sonner";
 import { CropperModal } from "../organisms/modals/cropper-modal";
 
 interface Props extends React.InputHTMLAttributes<HTMLInputElement> {
-  setValue: UseFormSetValue<{ avatar: File | undefined }>;
+  setValue: UseFormSetValue<{ avatar: string | File | undefined }>;
   className?: string;
   image?: string;
 }
@@ -23,16 +23,20 @@ const AvatarUpload = ({ setValue, className, image, ...props }: Props) => {
   const [openCropper, setOpenCropper] = useState(false);
 
   useEffect(() => {
-    setPreview(image || null);
-  }, [image]);
-
-  useEffect(() => {
-    setValue("avatar", imageFile || undefined);
-  }, [imageFile, setValue]);
+    setImageUrl(image || null);
+  }, [image, setValue]);
 
   useEffect(() => {
     setPreview(imageUrl);
   }, [imageUrl]);
+
+  useEffect(() => {
+    if (imageFile) {
+      setValue("avatar", imageFile);
+    } else {
+      setValue("avatar", imageUrl || "");
+    }
+  }, [imageFile, imageUrl, setValue]);
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
     const file = acceptedFiles[0];

@@ -24,13 +24,17 @@ export const useUpdateOnboarding = () => {
     mutationFn: async ({ body }) => {
       dispatch(AppAction.setLoading(true));
 
-      let avatar_url: string | undefined = undefined;
-      if (body.file) {
+      let avatar_url = body.avatar_url;
+
+      if (body.file instanceof File) {
         const upload = await uploadFileApi({
           bucket: "avatars",
           file: body.file,
         });
+
         avatar_url = upload.data.url;
+      } else {
+        avatar_url = body.file;
       }
 
       const data = await updateUserApi(body.id, { ...body, avatar_url });

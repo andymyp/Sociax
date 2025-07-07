@@ -24,18 +24,20 @@ export const OnboardingStepThree = (props: Props) => {
   const form = useForm<FormValues>({
     resolver: zodResolver(AvatarSchema),
     defaultValues: {
-      avatar: props.userForm.avatar_url || "",
+      avatar: props.userForm.avatar_url,
     },
   });
 
   const onSubmit: SubmitHandler<FormValues> = async (data) => {
-    const file = data.avatar as File;
+    const newData = { ...props.userForm, file: data.avatar };
 
-    props.setUserForm({
-      ...props.userForm,
-      file,
-    });
+    if (data.avatar instanceof File) {
+      newData.avatar_url = URL.createObjectURL(data.avatar);
+    } else {
+      newData.avatar_url = data.avatar;
+    }
 
+    props.setUserForm(newData);
     props.nextStep();
   };
 

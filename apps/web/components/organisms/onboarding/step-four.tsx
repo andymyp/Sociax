@@ -14,7 +14,7 @@ interface Props {
 }
 
 export const OnboardingStepFour = (props: Props) => {
-  const { isPending } = useUpdateOnboarding();
+  const { mutateAsync, isPending } = useUpdateOnboarding();
 
   const submitForm = async () => {
     const body = props.userForm;
@@ -22,9 +22,7 @@ export const OnboardingStepFour = (props: Props) => {
     delete body.created_at;
     delete body.updated_at;
 
-    console.log("body:", body);
-
-    // await mutateAsync({ body: { ...body, boarded: true } });
+    await mutateAsync({ body: { ...body, boarded: true } });
   };
 
   return (

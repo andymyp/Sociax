@@ -17,7 +17,7 @@ export const AvatarSchema = z.object({
           (file) => file.size <= 2 * 1024 * 1024,
           "Avatar must be less than 2MB"
         ),
-      z.string().transform((value) => (value === "" ? undefined : value)),
+      z.string(),
     ])
     .optional(),
 });
