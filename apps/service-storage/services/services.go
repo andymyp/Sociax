@@ -33,6 +33,6 @@ func (s *services) Upload(req *types.UploadRequest) (string, error) {
 		return "", err
 	}
 
-	url := fmt.Sprintf("%s/%s/%s", utils.GetEnvOrFail("MINIO_ENDPOINT"), req.Bucket, req.FileName)
+	url := fmt.Sprintf("%s/%s/%s", utils.GetEnvOrFail("MINIO_PROXY"), req.Bucket, req.FileName)
 	return url, nil
 }

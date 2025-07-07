@@ -2,6 +2,7 @@ package repository
 
 import (
 	"Sociax/shared-go/models"
+	"encoding/json"
 	"strconv"
 
 	"gorm.io/gorm"
@@ -66,8 +67,23 @@ func (r *repo) GetByUsername(req *models.UsernameRequest) (*models.User, error) 
 }
 
 func (r *repo) Update(user *models.User) error {
-	var updatedUser *models.User
-	err := r.db.Model(&updatedUser).Where("id=?", user.ID).Updates(user).Error
+	data, err := json.Marshal(user)
+	if err != nil {
+		return err
+	}
+
+	var userMap map[string]interface{}
+	if err := json.Unmarshal(data, &userMap); err != nil {
+		return err
+	}
+
+	delete(userMap, "id")
+	delete(userMap, "password")
+	delete(userMap, "confirmed")
+	delete(userMap, "created_at")
+	delete(userMap, "updated_at")
+
+	err = r.db.Model(&models.User{}).Where("id=?", user.ID).Updates(userMap).Error
 	if err != nil {
 		return err
 	}
