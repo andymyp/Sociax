@@ -9,10 +9,12 @@ interface Props {
   prevStep: () => void;
   nextStep: () => void;
   isLoading?: boolean;
+  onClick?: () => void;
 }
 
 export const OnboardingButtons = ({
   type,
+  onClick,
   currentStep,
   stepLength,
   prevStep,
@@ -46,9 +48,22 @@ export const OnboardingButtons = ({
           )}
         </Button>
       ) : (
-        <Button size="lg" type={type} onClick={nextStep} disabled={isLoading}>
+        <Button
+          size="lg"
+          type={type}
+          onClick={onClick ? onClick : nextStep}
+          disabled={isLoading}
+        >
           {currentStep === stepLength - 1 ? "Get Started" : "Continue"}
-          <ArrowRight className="w-4 h-4 ml-2" />
+          {isLoading ? (
+            <Spinner
+              size={16}
+              textColor="text-primary-foreground/30"
+              fillColor="fill-primary-foreground"
+            />
+          ) : (
+            <ArrowRight className="w-4 h-4 ml-2" />
+          )}
         </Button>
       )}
     </div>

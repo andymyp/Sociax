@@ -1,47 +1,49 @@
-import { signInApi } from "@/lib/apis/auth-api";
+import { uploadFileApi } from "@/lib/apis/storage-api";
+import { updateUserApi } from "@/lib/apis/user-api";
 import { AppDispatch } from "@/lib/store";
 import { setUser } from "@/lib/store/actions/auth-action";
 import { AppAction } from "@/lib/store/slices/app-slice";
-import { setAccessToken } from "@/lib/token";
 import { IApiError, IApiRequest, IApiResponse } from "@/lib/types/app-type";
-import { IAuthResponse, ISignInRequest, IUser } from "@/lib/types/auth-type";
+import { IUser } from "@/lib/types/auth-type";
+import { IUpdateUserRequest } from "@/lib/types/user-type";
 import { useMutation } from "@tanstack/react-query";
 import { AxiosError } from "axios";
-import { jwtDecode } from "jwt-decode";
 import { useRouter } from "next/navigation";
 import { useDispatch } from "react-redux";
 import { toast } from "sonner";
 
-export const useSignIn = () => {
+export const useUpdateOnboarding = () => {
   const dispatch = useDispatch<AppDispatch>();
   const router = useRouter();
 
   return useMutation<
-    IApiResponse<IAuthResponse>,
+    IApiResponse<IUser>,
     AxiosError<IApiError>,
-    IApiRequest<ISignInRequest>
+    IApiRequest<IUpdateUserRequest>
   >({
     mutationFn: async ({ body }) => {
       dispatch(AppAction.setLoading(true));
 
-      const data = await signInApi(body);
+      let avatar_url: string | undefined = undefined;
+      if (body.file) {
+        const upload = await uploadFileApi({
+          bucket: "avatars",
+          file: body.file,
+        });
+        avatar_url = upload.data.url;
+      }
+
+      const data = await updateUserApi(body.id, { ...body, avatar_url });
       return data;
     },
     onSuccess: async ({ data }) => {
-      const user = jwtDecode<IUser>(data.access_token);
+      delete data.created_at;
+      delete data.updated_at;
 
-      delete user.created_at;
-      delete user.updated_at;
+      await dispatch(setUser(data));
 
-      setAccessToken(data.access_token);
-      await dispatch(setUser(user));
-
-      if (!user.boarded) {
-        router.replace("/onboarding");
-      } else {
-        toast.success("Welcome " + user.name);
-        router.replace("/");
-      }
+      toast.success("Welcome " + data.name);
+      router.replace("/");
     },
     onError: (err) => toast.error(err.response?.data.error.message),
     onSettled: () => dispatch(AppAction.setLoading(false)),

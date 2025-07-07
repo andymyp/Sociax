@@ -1,7 +1,12 @@
+"use client";
+
 import { Check } from "lucide-react";
 import { OnboardingButtons } from "./buttons";
+import { IUpdateUserRequest } from "@/lib/types/user-type";
+import { useUpdateOnboarding } from "@/hooks/user/use-update-onboarding";
 
 interface Props {
+  userForm: IUpdateUserRequest;
   currentStep: number;
   stepLength: number;
   prevStep: () => void;
@@ -9,6 +14,19 @@ interface Props {
 }
 
 export const OnboardingStepFour = (props: Props) => {
+  const { isPending } = useUpdateOnboarding();
+
+  const submitForm = async () => {
+    const body = props.userForm;
+
+    delete body.created_at;
+    delete body.updated_at;
+
+    console.log("body:", body);
+
+    // await mutateAsync({ body: { ...body, boarded: true } });
+  };
+
   return (
     <div className="space-y-6">
       <div className="space-y-6 animate-slide-in">
@@ -18,16 +36,19 @@ export const OnboardingStepFour = (props: Props) => {
           </div>
           <h3 className="text-xl font-semibold">You&apos;re all set!</h3>
           <p className="text-gray-600 dark:text-gray-400 max-w-md mx-auto">
-            Welcome to Social, Andy! Your profile is ready.
+            Welcome to Sociax, {props.userForm.name}!<br />
+            Your profile is ready.
           </p>
         </div>
       </div>
       <OnboardingButtons
         type="button"
+        onClick={submitForm}
         currentStep={props.currentStep}
         stepLength={props.stepLength}
         prevStep={props.prevStep}
         nextStep={props.nextStep}
+        isLoading={isPending}
       />
     </div>
   );

@@ -10,6 +10,7 @@ import { OnboardingStepOne } from "../organisms/onboarding/step-one";
 import { OnboardingStepTwo } from "../organisms/onboarding/step-two";
 import { OnboardingStepThree } from "../organisms/onboarding/step-three";
 import { OnboardingStepFour } from "../organisms/onboarding/step-four";
+import { IUpdateUserRequest } from "@/lib/types/user-type";
 
 const steps = [
   {
@@ -38,11 +39,17 @@ export default function OnboardingPage() {
   const router = useRouter();
   const user = useSelector((state: AppState) => state.auth.user);
 
+  const [userForm, setUserForm] = React.useState<IUpdateUserRequest>();
+
   const [currentStep, setCurrentStep] = React.useState(0);
 
   React.useEffect(() => {
     if (user && user.boarded) {
       router.replace("/");
+    }
+
+    if (user) {
+      setUserForm(user);
     }
   }, [router, user]);
 
@@ -111,7 +118,8 @@ export default function OnboardingPage() {
 
           {currentStep === 1 && (
             <OnboardingStepTwo
-              user={user}
+              userForm={userForm!}
+              setUserForm={setUserForm}
               currentStep={currentStep}
               stepLength={steps.length}
               prevStep={prevStep}
@@ -121,7 +129,8 @@ export default function OnboardingPage() {
 
           {currentStep === 2 && (
             <OnboardingStepThree
-              user={user}
+              userForm={userForm!}
+              setUserForm={setUserForm}
               currentStep={currentStep}
               stepLength={steps.length}
               prevStep={prevStep}
@@ -131,6 +140,7 @@ export default function OnboardingPage() {
 
           {currentStep === 3 && (
             <OnboardingStepFour
+              userForm={userForm!}
               currentStep={currentStep}
               stepLength={steps.length}
               prevStep={prevStep}

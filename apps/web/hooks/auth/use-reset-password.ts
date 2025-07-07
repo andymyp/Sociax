@@ -34,14 +34,16 @@ export const useResetPassword = () => {
     onSuccess: async ({ data }) => {
       const user = jwtDecode<IUser>(data.access_token);
 
+      delete user.created_at;
+      delete user.updated_at;
+
       setAccessToken(data.access_token);
       await dispatch(setUser(user));
-
-      toast.success("Welcome " + user.name);
 
       if (!user.boarded) {
         router.replace("/onboarding");
       } else {
+        toast.success("Welcome " + user.name);
         router.replace("/");
       }
     },

@@ -10,37 +10,44 @@ import {
   FormMessage,
 } from "@/components/molecules/form";
 import { ProfileSchema } from "@/lib/schemas/user-schema";
-import { IUser } from "@/lib/types/auth-type";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { AtSign, User2 } from "lucide-react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { z } from "zod";
 import { OnboardingButtons } from "./buttons";
+import { IUpdateUserRequest } from "@/lib/types/user-type";
 
 type FormValues = z.infer<typeof ProfileSchema>;
 
 interface Props {
-  user: IUser;
+  userForm: IUpdateUserRequest;
+  setUserForm: (user: IUpdateUserRequest) => void;
   currentStep: number;
   stepLength: number;
   prevStep: () => void;
   nextStep: () => void;
 }
 
-export const OnboardingStepTwo = ({ user, ...props }: Props) => {
+export const OnboardingStepTwo = ({
+  userForm,
+  setUserForm,
+  ...props
+}: Props) => {
   const form = useForm<FormValues>({
     resolver: zodResolver(ProfileSchema),
     defaultValues: {
-      name: user.name,
-      username: user.username,
-      birthday: user.birthday || undefined,
-      gender: user.gender ? (user.gender as FormValues["gender"]) : undefined,
-      bio: user.bio || "",
+      name: userForm.name,
+      username: userForm.username,
+      birthday: userForm.birthday ? new Date(userForm.birthday) : undefined,
+      gender: userForm.gender
+        ? (userForm.gender as FormValues["gender"])
+        : undefined,
+      bio: userForm.bio || "",
     },
   });
 
   const onSubmit: SubmitHandler<FormValues> = async (data) => {
-    console.log("profile:", data);
+    setUserForm({ ...userForm, ...data });
     props.nextStep();
   };
 

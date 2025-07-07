@@ -10,11 +10,13 @@ export interface IUser {
   username: string;
   birthday: Date;
   gender: string;
-  bio: string;
-  avatar_url: string;
+  bio?: string;
+  avatar_url?: string;
   confirmed: boolean;
   boarded: boolean;
   online: boolean;
+  created_at?: Date;
+  updated_at?: Date;
 }
 
 export interface ISignUpRequest {

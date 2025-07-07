@@ -35,11 +35,18 @@ export const useSignInOauth = () => {
 
         const user = jwtDecode<IUser>(res.access_token);
 
+        delete user.created_at;
+        delete user.updated_at;
+
         setAccessToken(res.access_token);
         await dispatch(setUser(user));
 
-        toast.success("Welcome " + user.name);
-        router.replace("/");
+        if (!user.boarded) {
+          router.replace("/onboarding");
+        } else {
+          toast.success("Welcome " + user.name);
+          router.replace("/");
+        }
       } catch (err: any) {
         toast.error(err.message);
       }
