@@ -57,6 +57,11 @@ func (s *services) SignInGoogleCallback(req *models.OAuthCallbackRequest) (*mode
 		Confirmed: true,
 	}
 
+	userData.Username, err = s.GenerateUniqueUsername(googleRes.Email)
+	if err != nil {
+		return nil, err
+	}
+
 	user, err := s.repo.UpsertUser(userData)
 	if err != nil {
 		return nil, err
@@ -145,6 +150,11 @@ func (s *services) SignInGithubCallback(req *models.OAuthCallbackRequest) (*mode
 		Email:     primaryEmail,
 		AvatarURL: githubRes.AvatarUrl,
 		Confirmed: true,
+	}
+
+	userData.Username, err = s.GenerateUniqueUsername(primaryEmail)
+	if err != nil {
+		return nil, err
 	}
 
 	user, err := s.repo.UpsertUser(userData)
