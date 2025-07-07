@@ -3,15 +3,26 @@ package repository
 import (
 	"Sociax/shared-go/models"
 
+	"github.com/google/uuid"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 )
 
 type Repository interface {
+	CreateUser(user *models.User) (*models.User, error)
+	GetUserByEmail(email string) (*models.User, error)
+	GetUserByUsername(username string) (*models.User, error)
+	GetUsernames(username string) ([]string, error)
+	UpdateUser(user *models.User) error
 	CreateOTP(emailOTP *models.EmailOTP) error
-	FindOTP(req models.OTPRequest) (*models.EmailOTP, error)
-	CreateAuthProvider(authProvider *models.AuthProvider) error
+	GetOTP(req *models.OTPRequest) (*models.EmailOTP, error)
+	UpdateOTP(emailOTP *models.EmailOTP) error
+	CreateAuthProvider(provider *models.AuthProvider) error
 	CreateRefreshToken(refreshToken *models.RefreshToken) error
+	UpsertUser(user *models.User) (*models.User, error)
+	GetRefreshToken(req *models.RefreshTokenRequest) (*models.RefreshToken, error)
+	GetUserByID(id uuid.UUID) (*models.User, error)
+	UpdateRefreshToken(refreshToken *models.RefreshToken) error
 }
 
 type repo struct {
@@ -22,18 +33,17 @@ func NewRepository(db *gorm.DB) Repository {
 	return &repo{db}
 }
 
-func (r *repo) CreateOTP(emailOTP *models.EmailOTP) error {
-	return r.db.Clauses(clause.OnConflict{
-		Columns: []clause.Column{{Name: "email"}},
-		DoUpdates: clause.AssignmentColumns([]string{
-			"type", "otp", "expires_at", "created_at",
-		}),
-	}).Create(emailOTP).Error
+func (r *repo) CreateUser(user *models.User) (*models.User, error) {
+	if err := r.db.Create(user).Error; err != nil {
+		return nil, err
+	}
+
+	return user, nil
 }
 
-func (r *repo) FindOTP(req models.OTPRequest) (*models.EmailOTP, error) {
-	var emailOTP models.EmailOTP
-	err := r.db.Where("email = ? AND type = ?", req.Email, req.Type).First(&emailOTP).Error
+func (r *repo) GetUserByEmail(email string) (*models.User, error) {
+	var user *models.User
+	err := r.db.Where("email=?", email).First(&user).Error
 
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
@@ -42,18 +52,137 @@ func (r *repo) FindOTP(req models.OTPRequest) (*models.EmailOTP, error) {
 		return nil, err
 	}
 
-	return &emailOTP, err
+	return user, nil
 }
 
-func (r *repo) CreateAuthProvider(authProvider *models.AuthProvider) error {
-	return r.db.Create(authProvider).Error
+func (r *repo) GetUserByUsername(username string) (*models.User, error) {
+	var user *models.User
+	err := r.db.Where("username=?", username).First(&user).Error
+
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return nil, nil
+		}
+		return nil, err
+	}
+
+	return user, nil
+}
+
+func (r *repo) GetUsernames(username string) ([]string, error) {
+	var usernames []string
+	err := r.db.Model(&models.User{}).Where("username LIKE ?", username+"%").Pluck("username", &usernames).Error
+	if err != nil {
+		return nil, err
+	}
+
+	return usernames, nil
+}
+
+func (r *repo) UpdateUser(user *models.User) error {
+	return r.db.Save(user).Error
+}
+
+func (r *repo) CreateOTP(emailOTP *models.EmailOTP) error {
+	return r.db.Clauses(clause.OnConflict{
+		Columns: []clause.Column{{Name: "email"}},
+		DoUpdates: clause.AssignmentColumns([]string{
+			"type", "otp", "used", "expires_at", "created_at",
+		}),
+	}).Create(emailOTP).Error
+}
+
+func (r *repo) GetOTP(req *models.OTPRequest) (*models.EmailOTP, error) {
+	var emailOTP *models.EmailOTP
+	err := r.db.Where("email=? AND type=? AND used=?", req.Email, req.Type, false).First(&emailOTP).Error
+
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return nil, nil
+		}
+		return nil, err
+	}
+
+	return emailOTP, err
+}
+
+func (r *repo) UpdateOTP(emailOTP *models.EmailOTP) error {
+	return r.db.Save(emailOTP).Error
+}
+
+func (r *repo) CreateAuthProvider(provider *models.AuthProvider) error {
+	var exists models.AuthProvider
+	err := r.db.Where("user_id=? AND provider=?", provider.UserID, provider.Provider).First(&exists).Error
+	if err == nil {
+		return nil
+	}
+	if err != gorm.ErrRecordNotFound {
+		return err
+	}
+
+	return r.db.Create(provider).Error
 }
 
 func (r *repo) CreateRefreshToken(refreshToken *models.RefreshToken) error {
 	return r.db.Clauses(clause.OnConflict{
-		Columns: []clause.Column{{Name: "user_id"}},
+		Columns: []clause.Column{{Name: "user_id"}, {Name: "device_id"}},
 		DoUpdates: clause.AssignmentColumns([]string{
 			"token", "revoked", "expires_at", "created_at",
 		}),
 	}).Create(refreshToken).Error
+}
+
+func (r *repo) UpsertUser(user *models.User) (*models.User, error) {
+	checkUser, err := r.GetUserByEmail(user.Email)
+	if err != nil {
+		return nil, err
+	}
+
+	if checkUser != nil {
+		checkUser.Confirmed = true
+		if err := r.UpdateUser(checkUser); err != nil {
+			return nil, err
+		}
+	}
+
+	if checkUser == nil {
+		checkUser, err = r.CreateUser(user)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	return checkUser, nil
+}
+
+func (r *repo) GetRefreshToken(req *models.RefreshTokenRequest) (*models.RefreshToken, error) {
+	var refreshToken *models.RefreshToken
+	err := r.db.Where("token=? AND revoked=?", req.RefreshToken, false).First(&refreshToken).Error
+
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return nil, nil
+		}
+		return nil, err
+	}
+
+	return refreshToken, err
+}
+
+func (r *repo) GetUserByID(id uuid.UUID) (*models.User, error) {
+	var user models.User
+	err := r.db.First(&user, id).Error
+
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return nil, nil
+		}
+		return nil, err
+	}
+
+	return &user, err
+}
+
+func (r *repo) UpdateRefreshToken(refreshToken *models.RefreshToken) error {
+	return r.db.Save(refreshToken).Error
 }

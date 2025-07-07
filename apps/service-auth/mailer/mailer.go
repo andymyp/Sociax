@@ -5,15 +5,9 @@ import (
 	"embed"
 	"html/template"
 	"log"
-	"strconv"
 
 	"gopkg.in/gomail.v2"
 )
-
-type DataOTP struct {
-	Name string
-	OTP  string
-}
 
 //go:embed *.html
 var templateFS embed.FS
@@ -21,12 +15,24 @@ var templateFS embed.FS
 var dialer *gomail.Dialer
 var from string
 
-func InitMailer(host, port, user, pass, email string) {
-	portInt, _ := strconv.Atoi(port)
-	d := gomail.NewDialer(host, portInt, user, pass)
-	
+type Config struct {
+	Host  string
+	Port  int
+	User  string
+	Pass  string
+	Email string
+}
+
+type DataOTP struct {
+	Name string
+	OTP  string
+}
+
+func InitMailer(cfg Config) {
+	d := gomail.NewDialer(cfg.Host, cfg.Port, cfg.User, cfg.Pass)
+
 	dialer = d
-	from = email
+	from = cfg.Email
 }
 
 func SendEmailOTP(to string, data DataOTP) {

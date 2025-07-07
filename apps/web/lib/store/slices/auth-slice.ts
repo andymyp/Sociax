@@ -1,0 +1,70 @@
+import {
+  IDeviceInfo,
+  IEmailResponse,
+  IResendOtp,
+  IUser,
+} from "@/lib/types/auth-type";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { v4 as uuidv4 } from "uuid";
+
+interface IinitialState {
+  deviceInfo: IDeviceInfo;
+  verify: IEmailResponse | null;
+  resendOtp: IResendOtp;
+  user: IUser | null;
+}
+
+const initialState: IinitialState = {
+  deviceInfo: {
+    device_id: getOrCreateDeviceId(),
+    device: "web",
+  },
+  verify: null,
+  resendOtp: {
+    attempts: 0,
+    nextResendAt: null,
+  },
+  user: null,
+};
+
+function getOrCreateDeviceId() {
+  if (typeof window === "undefined") return "";
+
+  const key = "device_id";
+  let deviceId = localStorage.getItem(key);
+
+  if (!deviceId) {
+    deviceId = uuidv4();
+    localStorage.setItem(key, deviceId);
+  }
+
+  return deviceId;
+}
+
+const delayOtpSteps = [60, 120, 120, 3600];
+
+const authSlice = createSlice({
+  name: "auth",
+  initialState,
+  reducers: {
+    resetState: () => initialState,
+    setVerify: (state, action: PayloadAction<IinitialState["verify"]>) => {
+      state.verify = action.payload;
+    },
+    startOtpCooldown: (state) => {
+      if (state.resendOtp.attempts >= delayOtpSteps.length) return;
+      const delay = delayOtpSteps[state.resendOtp.attempts] * 1000;
+      state.resendOtp.nextResendAt = Date.now() + delay;
+      state.resendOtp.attempts += 1;
+    },
+    resetResendOtp: (state) => {
+      state.resendOtp = initialState.resendOtp;
+    },
+    setUser: (state, action: PayloadAction<IinitialState["user"]>) => {
+      state.user = action.payload;
+    },
+  },
+});
+
+export default authSlice.reducer;
+export const AuthAction = authSlice.actions;

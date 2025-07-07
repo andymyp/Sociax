@@ -7,8 +7,9 @@ import (
 func Routes(handlers *handlers.Handlers) map[string]func([]byte) ([]byte, error) {
 	return map[string]func([]byte) ([]byte, error){
 
-		"create": handlers.Create,
-		"find-by-email": handlers.FindByEmail,
-		"update": handlers.Update,
+		"get-by-id":       handlers.GetByID,
+		"get-by-email":    handlers.GetByEmail,
+		"get-by-username": handlers.GetByUsername,
+		"update":          handlers.Update,
 	}
 }

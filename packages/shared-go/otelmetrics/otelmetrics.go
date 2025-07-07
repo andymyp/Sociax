@@ -11,11 +11,16 @@ import (
 	semconv "go.opentelemetry.io/otel/semconv/v1.34.0"
 )
 
-func InitMetrics(endpoint string, service string) func() {
+type Config struct {
+	Endpoint string
+	Service  string
+}
+
+func InitMetrics(cfg Config) func() {
 	ctx := context.Background()
 
 	exporter, err := otlpmetrichttp.New(ctx,
-		otlpmetrichttp.WithEndpoint(endpoint),
+		otlpmetrichttp.WithEndpoint(cfg.Endpoint),
 		otlpmetrichttp.WithInsecure(),
 	)
 	if err != nil {
@@ -26,7 +31,7 @@ func InitMetrics(endpoint string, service string) func() {
 		metric.WithReader(metric.NewPeriodicReader(exporter)),
 		metric.WithResource(resource.NewWithAttributes(
 			semconv.SchemaURL,
-			semconv.ServiceNameKey.String(service),
+			semconv.ServiceNameKey.String(cfg.Service),
 		)),
 	)
 
