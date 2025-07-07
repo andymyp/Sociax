@@ -11,17 +11,6 @@ func (h *Handlers) StorageHandler(action string) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		var body map[string]interface{}
 
-		if len(c.Body()) > 0 {
-			if err := c.BodyParser(&body); err != nil {
-				return c.Status(fiber.StatusBadRequest).JSON(rabbitmq.RPCResponse{
-					Error: &rabbitmq.RPCError{
-						Code:    fiber.StatusBadRequest,
-						Message: err.Error(),
-					},
-				})
-			}
-		}
-
 		fileHeader, err := c.FormFile("file")
 		if err != nil {
 			return c.Status(fiber.StatusInternalServerError).JSON(rabbitmq.RPCResponse{
@@ -32,7 +21,17 @@ func (h *Handlers) StorageHandler(action string) fiber.Handler {
 			})
 		}
 
-		rpcBody, err := helper.MakeRpcRequestBodyWithFile(body, c.AllParams(), c.Queries(), fileHeader)
+		userID, ok := c.Locals("user_id").(string)
+		if !ok {
+			return c.Status(fiber.StatusUnauthorized).JSON(rabbitmq.RPCResponse{
+				Error: &rabbitmq.RPCError{
+					Code:    fiber.StatusUnauthorized,
+					Message: "Unauthorized",
+				},
+			})
+		}
+
+		rpcBody, err := helper.MakeRpcRequestBodyWithFile(body, c.AllParams(), c.Queries(), fileHeader, userID)
 		if err != nil {
 			return c.Status(fiber.StatusInternalServerError).JSON(rabbitmq.RPCResponse{
 				Error: &rabbitmq.RPCError{

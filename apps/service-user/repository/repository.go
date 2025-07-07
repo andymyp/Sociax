@@ -11,7 +11,7 @@ type Repository interface {
 	GetByID(req *models.IDRequest) (*models.User, error)
 	GetByEmail(req *models.EmailRequest) (*models.User, error)
 	GetByUsername(req *models.UsernameRequest) (*models.User, error)
-	Update(user *models.User) (*models.User, error)
+	Update(user *models.User) error
 	GetAll(filters map[string]string) (int64, []models.User, error)
 }
 
@@ -65,12 +65,14 @@ func (r *repo) GetByUsername(req *models.UsernameRequest) (*models.User, error) 
 	return &user, nil
 }
 
-func (r *repo) Update(user *models.User) (*models.User, error) {
-	if err := r.db.Save(user).Error; err != nil {
-		return nil, err
+func (r *repo) Update(user *models.User) error {
+	var updatedUser *models.User
+	err := r.db.Model(&updatedUser).Where("id=?", user.ID).Updates(user).Error
+	if err != nil {
+		return err
 	}
 
-	return user, nil
+	return nil
 }
 
 func (r *repo) GetAll(filters map[string]string) (int64, []models.User, error) {

@@ -3,8 +3,11 @@ package helper
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"io"
 	"mime/multipart"
+	"path/filepath"
+	"time"
 )
 
 func MakeRpcRequestBody(body map[string]interface{}, params, queries map[string]string) ([]byte, error) {
@@ -28,7 +31,12 @@ func MakeRpcRequestBody(body map[string]interface{}, params, queries map[string]
 	return mergedData, nil
 }
 
-func MakeRpcRequestBodyWithFile(body map[string]interface{}, params, queries map[string]string, file *multipart.FileHeader) ([]byte, error) {
+func MakeRpcRequestBodyWithFile(
+	body map[string]interface{},
+	params, queries map[string]string,
+	file *multipart.FileHeader,
+	userID string,
+) ([]byte, error) {
 	if body == nil {
 		body = make(map[string]interface{})
 	}
@@ -53,8 +61,20 @@ func MakeRpcRequestBodyWithFile(body map[string]interface{}, params, queries map
 		return nil, err
 	}
 
+	filename := file.Filename
+
+	if bucket, ok := body["bucket"].(string); ok {
+		switch bucket {
+		case "avatars":
+			ext := filepath.Ext(file.Filename)
+			filename = fmt.Sprintf("%s%s", userID, ext)
+		default:
+			filename = fmt.Sprintf("%d_%s", time.Now().Unix(), filename)
+		}
+	}
+
 	body["content_type"] = file.Header.Get("Content-Type")
-	body["file_name"] = file.Filename
+	body["file_name"] = filename
 	body["file_data"] = buf.Bytes()
 
 	mergedData, err := json.Marshal(body)

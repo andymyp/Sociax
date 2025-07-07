@@ -102,9 +102,13 @@ func (h *Handlers) Update(body []byte) ([]byte, error) {
 		return rabbitmq.ErrorResponse(err.Error(), 400)
 	}
 
-	user, err := h.service.Update(req)
+	user, rpcErr, err := h.service.Update(req)
 	if err != nil {
 		return rabbitmq.ErrorResponse(err.Error(), 500)
+	}
+
+	if rpcErr != nil {
+		return rabbitmq.ErrorResponse(rpcErr.Message, rpcErr.Code)
 	}
 
 	return rabbitmq.SuccessResponse(user)

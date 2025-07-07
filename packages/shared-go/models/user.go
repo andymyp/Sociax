@@ -15,7 +15,7 @@ type User struct {
 	AvatarURL string     `gorm:"type:text" json:"avatar_url"`
 	Birthday  *time.Time `gorm:"type:timestamptz" json:"birthday"`
 	Gender    *string    `gorm:"type:varchar(8)" json:"gender"`
-	Password  *string    `gorm:"type:text" json:"password,omitempty" validate:"required,min=6"`
+	Password  *string    `gorm:"type:text" json:"password,omitempty"`
 	Bio       *string    `gorm:"type:text" json:"bio"`
 	Confirmed bool       `gorm:"default:false" json:"confirmed"`
 	Boarded   bool       `gorm:"default:false" json:"boarded"`
@@ -37,4 +37,9 @@ type IDRequest struct {
 
 type UsernameRequest struct {
 	Username string `json:"username" validate:"required"`
+}
+
+type CheckUsernameRequest struct {
+	ID       uuid.UUID `json:"id" validate:"required"`
+	Username string    `json:"username" validate:"required"`
 }

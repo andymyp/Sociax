@@ -37,12 +37,19 @@ func Access() fiber.Handler {
 			})
 		}
 
-		claims, _ := token.Claims.(jwt.MapClaims)
-		userID, ok := claims["user_id"].(string)
+		claims, ok := token.Claims.(jwt.MapClaims)
 		if !ok {
 			return c.Status(fiber.StatusUnauthorized).JSON(rabbitmq.RPCError{
 				Code:    fiber.StatusUnauthorized,
 				Message: "Invalid token claims",
+			})
+		}
+
+		userID, ok := claims["id"].(string)
+		if !ok {
+			return c.Status(fiber.StatusUnauthorized).JSON(rabbitmq.RPCError{
+				Code:    fiber.StatusUnauthorized,
+				Message: "Missing id in token",
 			})
 		}
 

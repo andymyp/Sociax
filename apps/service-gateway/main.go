@@ -55,6 +55,7 @@ func main() {
 	routes.AuthRoutes(app, handler)
 	routes.OAuthRoutes(app, handler)
 	routes.UserRoutes(app, handler)
+	routes.StorageRoutes(app, handler)
 
 	PORT := utils.GetEnvOrFail("PORT")
 	if err := app.Listen(":" + PORT); err != nil {
