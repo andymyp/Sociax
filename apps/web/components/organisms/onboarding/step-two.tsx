@@ -22,39 +22,35 @@ type FormValues = z.infer<typeof ProfileSchema>;
 
 interface Props {
   userForm: IUpdateUserRequest;
-  setUserForm: (user: IUpdateUserRequest) => void;
   currentStep: number;
   stepLength: number;
   prevStep: () => void;
   nextStep: () => void;
 }
 
-export const OnboardingStepTwo = ({
-  userForm,
-  setUserForm,
-  ...props
-}: Props) => {
+export const OnboardingStepTwo = (props: Props) => {
   const form = useForm<FormValues>({
     resolver: zodResolver(ProfileSchema),
     defaultValues: {
-      name: userForm.name,
-      username: userForm.username,
-      birthday: userForm.birthday ? new Date(userForm.birthday) : undefined,
-      gender: userForm.gender
-        ? (userForm.gender as FormValues["gender"])
+      name: props.userForm.name,
+      username: props.userForm.username,
+      birthday: props.userForm.birthday
+        ? new Date(props.userForm.birthday)
         : undefined,
-      bio: userForm.bio || "",
+      gender: props.userForm.gender
+        ? (props.userForm.gender as FormValues["gender"])
+        : undefined,
+      bio: props.userForm.bio || "",
     },
   });
 
   const { mutateAsync } = useUpdateUser();
 
   const onSubmit: SubmitHandler<FormValues> = async (data) => {
-    const newData = { ...userForm, ...data };
+    const newData = { ...props.userForm, ...data };
 
     await mutateAsync({ body: newData });
 
-    setUserForm(newData);
     props.nextStep();
   };
 

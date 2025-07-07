@@ -22,22 +22,20 @@ export const useUpdateUser = () => {
     mutationFn: async ({ body }) => {
       dispatch(AppAction.setLoading(true));
 
-      let avatar_url = body.avatar_url;
+      if (body.file instanceof File) {
+        const upload = await uploadFileApi({
+          bucket: "avatars",
+          file: body.file,
+        });
 
-      if (body.file) {
-        if (body.file instanceof File) {
-          const upload = await uploadFileApi({
-            bucket: "avatars",
-            file: body.file,
-          });
-
-          avatar_url = upload.data.url;
-        } else {
-          avatar_url = body.file;
-        }
+        body.avatar_url = upload.data.url;
       }
 
-      const data = await updateUserApi(body.id, { ...body, avatar_url });
+      if (typeof body.file === "string" && body.file === "") {
+        body.avatar_url = body.file;
+      }
+
+      const data = await updateUserApi(body.id, body);
       return data;
     },
     onSuccess: async ({ data }) => {

@@ -5,6 +5,7 @@ import { OnboardingButtons } from "./buttons";
 import { IUpdateUserRequest } from "@/lib/types/user-type";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { useUpdateUser } from "@/hooks/user/use-update-user";
 
 interface Props {
   userForm: IUpdateUserRequest;
@@ -17,7 +18,13 @@ interface Props {
 export const OnboardingStepFour = (props: Props) => {
   const router = useRouter();
 
+  const { mutateAsync } = useUpdateUser();
+
   const submitForm = async () => {
+    const newData = { ...props.userForm, boarded: true };
+
+    await mutateAsync({ body: newData });
+
     toast.success("Welcome " + props.userForm.name);
     router.replace("/");
   };

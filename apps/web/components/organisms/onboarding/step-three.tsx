@@ -14,7 +14,6 @@ type FormValues = z.infer<typeof AvatarSchema>;
 
 interface Props {
   userForm: IUpdateUserRequest;
-  setUserForm: (user: IUpdateUserRequest) => void;
   currentStep: number;
   stepLength: number;
   prevStep: () => void;
@@ -42,7 +41,6 @@ export const OnboardingStepThree = (props: Props) => {
 
     await mutateAsync({ body: newData });
 
-    props.setUserForm(newData);
     props.nextStep();
   };
 

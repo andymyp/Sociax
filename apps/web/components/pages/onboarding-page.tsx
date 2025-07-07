@@ -119,7 +119,6 @@ export default function OnboardingPage() {
           {currentStep === 1 && (
             <OnboardingStepTwo
               userForm={userForm!}
-              setUserForm={setUserForm}
               currentStep={currentStep}
               stepLength={steps.length}
               prevStep={prevStep}
@@ -130,7 +129,6 @@ export default function OnboardingPage() {
           {currentStep === 2 && (
             <OnboardingStepThree
               userForm={userForm!}
-              setUserForm={setUserForm}
               currentStep={currentStep}
               stepLength={steps.length}
               prevStep={prevStep}

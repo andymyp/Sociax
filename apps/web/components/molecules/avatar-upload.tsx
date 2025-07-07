@@ -24,7 +24,7 @@ const AvatarUpload = ({ setValue, className, image, ...props }: Props) => {
 
   useEffect(() => {
     setImageUrl(image || null);
-  }, [image, setValue]);
+  }, [image]);
 
   useEffect(() => {
     setPreview(imageUrl);
