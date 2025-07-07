@@ -3,7 +3,8 @@
 import { Check } from "lucide-react";
 import { OnboardingButtons } from "./buttons";
 import { IUpdateUserRequest } from "@/lib/types/user-type";
-import { useUpdateOnboarding } from "@/hooks/user/use-update-onboarding";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 interface Props {
   userForm: IUpdateUserRequest;
@@ -14,15 +15,11 @@ interface Props {
 }
 
 export const OnboardingStepFour = (props: Props) => {
-  const { mutateAsync, isPending } = useUpdateOnboarding();
+  const router = useRouter();
 
   const submitForm = async () => {
-    const body = props.userForm;
-
-    delete body.created_at;
-    delete body.updated_at;
-
-    await mutateAsync({ body: { ...body, boarded: true } });
+    toast.success("Welcome " + props.userForm.name);
+    router.replace("/");
   };
 
   return (
@@ -46,7 +43,6 @@ export const OnboardingStepFour = (props: Props) => {
         stepLength={props.stepLength}
         prevStep={props.prevStep}
         nextStep={props.nextStep}
-        isLoading={isPending}
       />
     </div>
   );

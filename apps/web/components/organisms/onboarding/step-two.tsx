@@ -16,6 +16,7 @@ import { SubmitHandler, useForm } from "react-hook-form";
 import { z } from "zod";
 import { OnboardingButtons } from "./buttons";
 import { IUpdateUserRequest } from "@/lib/types/user-type";
+import { useUpdateUser } from "@/hooks/user/use-update-user";
 
 type FormValues = z.infer<typeof ProfileSchema>;
 
@@ -46,8 +47,14 @@ export const OnboardingStepTwo = ({
     },
   });
 
+  const { mutateAsync } = useUpdateUser();
+
   const onSubmit: SubmitHandler<FormValues> = async (data) => {
-    setUserForm({ ...userForm, ...data });
+    const newData = { ...userForm, ...data };
+
+    await mutateAsync({ body: newData });
+
+    setUserForm(newData);
     props.nextStep();
   };
 

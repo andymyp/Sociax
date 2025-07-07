@@ -8,6 +8,7 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { AvatarUpload } from "@/components/molecules/avatar-upload";
 import { IUpdateUserRequest } from "@/lib/types/user-type";
+import { useUpdateUser } from "@/hooks/user/use-update-user";
 
 type FormValues = z.infer<typeof AvatarSchema>;
 
@@ -28,6 +29,8 @@ export const OnboardingStepThree = (props: Props) => {
     },
   });
 
+  const { mutateAsync } = useUpdateUser();
+
   const onSubmit: SubmitHandler<FormValues> = async (data) => {
     const newData = { ...props.userForm, file: data.avatar };
 
@@ -36,6 +39,8 @@ export const OnboardingStepThree = (props: Props) => {
     } else {
       newData.avatar_url = data.avatar;
     }
+
+    await mutateAsync({ body: newData });
 
     props.setUserForm(newData);
     props.nextStep();
