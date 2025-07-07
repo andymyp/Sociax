@@ -35,6 +35,17 @@ services:
     command: server /data --console-address ":9001"
     restart: unless-stopped
 
+  nginx:
+    image: nginx:alpine
+    container_name: nginx
+    ports:
+      - "80:80"
+    volumes:
+      - ./infras/nginx:/etc/nginx/conf.d
+    restart: unless-stopped
+    depends_on:
+      - minio
+
   rabbitmq:
     container_name: rabbitmq
     image: rabbitmq:management-alpine
