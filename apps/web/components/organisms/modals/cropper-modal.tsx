@@ -10,9 +10,9 @@ import Cropper from "react-easy-crop";
 import { toast } from "sonner";
 
 interface Props {
+  title: string;
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  title: string;
   image: string | null;
   setImage: (image: string | null) => void;
   setImageFile: (file: File | null) => void;

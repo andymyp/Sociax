@@ -17,7 +17,6 @@ interface Props extends React.InputHTMLAttributes<HTMLInputElement> {
 }
 
 const AvatarUpload = ({ setValue, className, image, ...props }: Props) => {
-  const [preview, setPreview] = useState<string | null>(null);
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [openCropper, setOpenCropper] = useState(false);
@@ -25,10 +24,6 @@ const AvatarUpload = ({ setValue, className, image, ...props }: Props) => {
   useEffect(() => {
     setImageUrl(image || null);
   }, [image]);
-
-  useEffect(() => {
-    setPreview(imageUrl);
-  }, [imageUrl]);
 
   useEffect(() => {
     if (imageFile) {
@@ -62,18 +57,17 @@ const AvatarUpload = ({ setValue, className, image, ...props }: Props) => {
   });
 
   const handleRemoveAvatar = () => {
-    setPreview(null);
     setImageUrl(null);
     setImageFile(null);
   };
 
   useEffect(() => {
     return () => {
-      if (preview) {
-        URL.revokeObjectURL(preview);
+      if (imageUrl) {
+        URL.revokeObjectURL(imageUrl);
       }
     };
-  }, [preview]);
+  }, [imageUrl]);
 
   return (
     <div className="relative">
@@ -86,14 +80,14 @@ const AvatarUpload = ({ setValue, className, image, ...props }: Props) => {
         {...getRootProps()}
       >
         <Avatar className="size-full">
-          <AvatarImage src={preview || undefined} />
+          <AvatarImage src={imageUrl || undefined} />
           <AvatarFallback className="rounded-md">
             <ImageIcon className="h-12 w-12 text-muted-foreground/80 transition-transform duration-300 ease-in-out hover:scale-105" />
           </AvatarFallback>
         </Avatar>
         <input {...props} {...getInputProps()} />
       </div>
-      {preview && (
+      {imageUrl && (
         <Button
           type="button"
           className="absolute bg-red-700 hover:bg-red-600 top-1 right-1 w-8 h-8 rounded-full"
@@ -106,8 +100,8 @@ const AvatarUpload = ({ setValue, className, image, ...props }: Props) => {
         title="Adjust Your Picture"
         open={openCropper}
         onOpenChange={setOpenCropper}
-        setImage={setImageUrl}
         image={imageUrl}
+        setImage={setImageUrl}
         setImageFile={setImageFile}
       />
     </div>

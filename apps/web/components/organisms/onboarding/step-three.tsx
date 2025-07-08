@@ -33,12 +33,6 @@ export const OnboardingStepThree = (props: Props) => {
   const onSubmit: SubmitHandler<FormValues> = async (data) => {
     const newData = { ...props.userForm, file: data.avatar };
 
-    if (data.avatar instanceof File) {
-      newData.avatar_url = URL.createObjectURL(data.avatar);
-    } else {
-      newData.avatar_url = data.avatar;
-    }
-
     await mutateAsync({ body: newData });
 
     props.nextStep();
