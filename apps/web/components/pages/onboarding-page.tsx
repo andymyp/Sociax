@@ -6,11 +6,11 @@ import { useSelector } from "react-redux";
 import { useRouter } from "next/navigation";
 import { Loading } from "../templates/loading";
 import { Check, Sparkles, User, Users } from "lucide-react";
-import { OnboardingStepOne } from "../organisms/onboarding/step-one";
-import { OnboardingStepTwo } from "../organisms/onboarding/step-two";
-import { OnboardingStepThree } from "../organisms/onboarding/step-three";
-import { OnboardingStepFour } from "../organisms/onboarding/step-four";
 import { IUpdateUserRequest } from "@/lib/types/user-type";
+import { OnboardingStepOne } from "../templates/onboarding/step-one";
+import { OnboardingStepTwo } from "../templates/onboarding/step-two";
+import { OnboardingStepThree } from "../templates/onboarding/step-three";
+import { OnboardingStepFour } from "../templates/onboarding/step-four";
 
 const steps = [
   {
