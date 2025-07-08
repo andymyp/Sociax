@@ -133,15 +133,15 @@ func (s *services) SignIn(req *models.SignInRequest) (*models.AuthResponse, *rab
 		return nil, nil, err
 	}
 	if user == nil {
-		err := &rabbitmq.RPCError{Message: "Invalid email or password", Code: 401}
+		err := &rabbitmq.RPCError{Message: "Invalid email or password", Code: 404}
 		return nil, err, nil
 	}
 	if !user.Confirmed || user.Password == nil {
-		err := &rabbitmq.RPCError{Message: "Invalid email or password", Code: 401}
+		err := &rabbitmq.RPCError{Message: "Invalid email or password", Code: 404}
 		return nil, err, nil
 	}
 	if err := utils.HashCompare(*user.Password, req.Password); err != nil {
-		err := &rabbitmq.RPCError{Message: "Invalid email or password", Code: 401}
+		err := &rabbitmq.RPCError{Message: "Invalid email or password", Code: 404}
 		return nil, err, nil
 	}
 
