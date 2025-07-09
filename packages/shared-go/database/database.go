@@ -33,7 +33,7 @@ func InitDatabase(cfg Config) *gorm.DB {
 	var err error
 	DB, err = gorm.Open(postgres.Open(dsn), &gorm.Config{
 		PrepareStmt: true,
-		Logger:      logger.Default.LogMode(logger.Warn),
+		Logger:      logger.Default.LogMode(logger.Silent),
 	})
 
 	if err != nil {
