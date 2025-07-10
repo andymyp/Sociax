@@ -3,15 +3,15 @@
 import React from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { DottedSeparator } from "../atoms/dotted-separator";
-import { VerifyOtpForm } from "../organisms/forms/verify-otp-form";
+import { DottedSeparator } from "../../atoms/dotted-separator";
+import { VerifyOtpForm } from "../../organisms/forms/verify-otp-form";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, AppState } from "@/lib/store";
 import { useRouter } from "next/navigation";
 import { AuthAction } from "@/lib/store/slices/auth-slice";
-import { Button } from "../atoms/button";
+import { Button } from "../../atoms/button";
 import { useSendEmailOtp } from "@/hooks/auth/use-send-email-otp";
-import { Loading } from "../templates/loading";
+import { Loading } from "../../templates/loading";
 
 export default function VerifyOtpPage() {
   const router = useRouter();

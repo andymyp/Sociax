@@ -1,8 +1,8 @@
-import { Header } from "../organisms/header";
-import { MainContent } from "../organisms/main-content";
-import { MobileNavbar } from "../organisms/mobile-navbar";
-import { SidebarLeft } from "../organisms/sidebar-left";
-import { SidebarRight } from "../organisms/sidebar-right";
+import { Header } from "../../organisms/header";
+import { MainContent } from "../../organisms/main-content";
+import { MobileNavbar } from "../../organisms/mobile-navbar";
+import { SidebarLeft } from "../../organisms/sidebar-left";
+import { SidebarRight } from "../../organisms/sidebar-right";
 
 export default function HomePage() {
   return (
@@ -10,7 +10,7 @@ export default function HomePage() {
       <Header />
       <div className="max-w-7xl mx-auto mb-16 md:mb-0">
         <div className="grid grid-cols-1 md:grid-cols-12 gap-0 md:gap-2">
-          {/* Left Sidebar - Hidden on mobile, shown on lg+ */}
+          {/* Left Sidebar - Hidden on mobile, shown on md+ */}
           <div className="hidden md:block md:col-span-4 lg:col-span-3 p-4">
             <SidebarLeft />
           </div>

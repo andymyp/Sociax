@@ -4,7 +4,16 @@ import { Button } from "../atoms/button";
 import { Textarea } from "../atoms/textarea";
 import { Avatar, AvatarFallback, AvatarImage } from "../molecules/avatar";
 import { Card, CardContent, CardHeader } from "../molecules/card";
-import { Bookmark, Heart, MessageCircle, Share } from "lucide-react";
+import {
+  Bookmark,
+  Camera,
+  Film,
+  Heart,
+  LocationEdit,
+  MessageCircle,
+  Share,
+  Vote,
+} from "lucide-react";
 
 export function MainContent() {
   const posts = [
@@ -79,22 +88,32 @@ export function MainContent() {
                   variant="secondary"
                   className="bg-violet-100 dark:bg-violet-900/50 text-violet-700 dark:text-violet-300 hover:bg-violet-200 dark:hover:bg-violet-900 cursor-pointer transition-colors"
                 >
-                  📷 Photo
+                  <Camera className="mr-0.5" />
+                  Photo
                 </Badge>
                 <Badge
                   variant="secondary"
                   className="bg-violet-100 dark:bg-violet-900/50 text-violet-700 dark:text-violet-300 hover:bg-violet-200 dark:hover:bg-violet-900 cursor-pointer transition-colors"
                 >
-                  🎥 Video
+                  <Film className="mr-0.5" />
+                  Video
                 </Badge>
                 <Badge
                   variant="secondary"
                   className="bg-violet-100 dark:bg-violet-900/50 text-violet-700 dark:text-violet-300 hover:bg-violet-200 dark:hover:bg-violet-900 cursor-pointer transition-colors"
                 >
-                  📊 Poll
+                  <LocationEdit className="mr-0.5" />
+                  Location
+                </Badge>
+                <Badge
+                  variant="secondary"
+                  className="bg-violet-100 dark:bg-violet-900/50 text-violet-700 dark:text-violet-300 hover:bg-violet-200 dark:hover:bg-violet-900 cursor-pointer transition-colors"
+                >
+                  <Vote className="mr-0.5" />
+                  Poll
                 </Badge>
               </div>
-              <Button className="bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-700 hover:to-purple-700 text-white shadow-lg shadow-violet-500/25 transition-all duration-200 hover:shadow-xl hover:shadow-violet-500/30 disabled:opacity-50 disabled:cursor-not-allowed">
+              <Button className="bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-700 hover:to-purple-700 text-white disabled:opacity-50 disabled:cursor-not-allowed">
                 Post
               </Button>
             </div>

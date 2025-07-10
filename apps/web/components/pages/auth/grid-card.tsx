@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { GridPattern } from "../atoms/grid-pattern";
+import { GridPattern } from "../../atoms/grid-pattern";
 
 interface Props {
   label: string;

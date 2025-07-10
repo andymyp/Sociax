@@ -4,13 +4,13 @@ import React from "react";
 import { AppState } from "@/lib/store";
 import { useSelector } from "react-redux";
 import { useRouter } from "next/navigation";
-import { Loading } from "../templates/loading";
+import { Loading } from "../../templates/loading";
 import { Check, Sparkles, User, Users } from "lucide-react";
 import { IUpdateUserRequest } from "@/lib/types/user-type";
-import { OnboardingStepOne } from "../templates/onboarding/step-one";
-import { OnboardingStepTwo } from "../templates/onboarding/step-two";
-import { OnboardingStepThree } from "../templates/onboarding/step-three";
-import { OnboardingStepFour } from "../templates/onboarding/step-four";
+import { OnboardingStepOne } from "./step-one";
+import { OnboardingStepTwo } from "./step-two";
+import { OnboardingStepThree } from "./step-three";
+import { OnboardingStepFour } from "./step-four";
 
 const steps = [
   {

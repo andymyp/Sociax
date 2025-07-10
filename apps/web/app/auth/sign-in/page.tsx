@@ -1,4 +1,4 @@
-import SignInPage from "@/components/pages/sign-in-page";
+import SignInPage from "@/components/pages/auth/sign-in-page";
 
 export const generateMetadata = () => {
   return { title: "Sociax - Sign In" };

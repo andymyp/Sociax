@@ -15,7 +15,6 @@ export function SidebarLeft() {
 
   return (
     <div className="space-y-4 sticky top-18">
-      {/* Profile Card */}
       <Card className="shadow-md shadow-violet-500/5 bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm overflow-hidden py-0">
         <div className="relative h-20">
           <div className="w-full h-full bg-gradient-to-r from-primary/80 via-primary to-primary/60" />

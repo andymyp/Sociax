@@ -1,4 +1,4 @@
-import OnboardingPage from "@/components/pages/onboarding-page";
+import OnboardingPage from "@/components/pages/onboarding/page";
 
 export const generateMetadata = () => {
   return { title: "Sociax - On Boarding" };
