@@ -1,4 +1,4 @@
-import { Header } from "../organisms/header";
+import { Header } from "../organisms/header/header";
 import { MobileNavbar } from "../organisms/navbar/mobile-navbar";
 
 export default function MainTemplate({
