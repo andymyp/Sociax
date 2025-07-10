@@ -33,7 +33,7 @@ export function DesktopNavbar() {
         <div className="w-full h-full bg-gradient-to-r from-primary/80 via-primary to-primary/60" />
         <div className="absolute -bottom-10 left-1/2 transform -translate-x-1/2">
           <Avatar className="w-20 h-20 border-3 border-card shadow-md">
-            <AvatarImage src={""} alt={user.name} />
+            <AvatarImage src={user.avatar_url || ""} alt={user.name} />
             <AvatarFallback className={fallbackAvatarColor(user.name)}>
               {fallbackAvatarName(user.name)}
             </AvatarFallback>
