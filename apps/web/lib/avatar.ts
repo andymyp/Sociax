@@ -9,10 +9,15 @@ export function fallbackAvatarName(name: string) {
 }
 
 export function fallbackAvatarColor(name: string) {
-  if (PRIMARY_NAME.includes(fallbackAvatarName(name))) return "bg-violet-600";
-  if (INFO_NAME.includes(fallbackAvatarName(name))) return "bg-blue-600";
-  if (SUCCESS_NAME.includes(fallbackAvatarName(name))) return "bg-green-600";
-  if (WARNING_NAME.includes(fallbackAvatarName(name))) return "bg-yellow-600";
-  if (ERROR_NAME.includes(fallbackAvatarName(name))) return "bg-red-600";
-  return "bg-violet-600";
+  if (PRIMARY_NAME.includes(fallbackAvatarName(name)))
+    return "bg-violet-600 text-white font-medium";
+  if (INFO_NAME.includes(fallbackAvatarName(name)))
+    return "bg-blue-600 text-white font-medium";
+  if (SUCCESS_NAME.includes(fallbackAvatarName(name)))
+    return "bg-green-600 text-white font-medium";
+  if (WARNING_NAME.includes(fallbackAvatarName(name)))
+    return "bg-yellow-600 text-white font-medium";
+  if (ERROR_NAME.includes(fallbackAvatarName(name)))
+    return "bg-red-600 text-white font-medium";
+  return "bg-violet-600 text-white font-medium";
 }
