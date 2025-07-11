@@ -11,6 +11,7 @@ import "@/styles/globals.css";
 import type { Metadata } from "next";
 import { ThemeProvider } from "@/components/providers/theme-provider";
 import { ReduxProvider } from "@/components/providers/redux-provider";
+import { NuqsProvider } from "@/components/providers/nuqs-provider";
 import { QueryProvider } from "@/components/providers/query-provider";
 import { LoadingProvider } from "@/components/providers/loading-provider";
 import { ToastProvider } from "@/components/providers/toast-provider";
@@ -45,11 +46,13 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <ReduxProvider>
-            <QueryProvider>
-              <LoadingProvider>
-                <ToastProvider>{children}</ToastProvider>
-              </LoadingProvider>
-            </QueryProvider>
+            <NuqsProvider>
+              <QueryProvider>
+                <LoadingProvider>
+                  <ToastProvider>{children}</ToastProvider>
+                </LoadingProvider>
+              </QueryProvider>
+            </NuqsProvider>
           </ReduxProvider>
         </ThemeProvider>
       </body>
